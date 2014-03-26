@@ -14,7 +14,6 @@
 #include "shttptool.h"
 #include "shttpparser.h"
 
-
 class SimpleHTTP : public HTTPObject
 {
     public:
@@ -67,6 +66,14 @@ class SimpleHTTP : public HTTPObject
     protected:
         const char*     _contents;
         int             _contents_size;
+
+#ifdef _WIN32
+    public:
+        static bool InitWinSock();
+        static bool FinalWinSock();
+#endif
+
 };
+
 
 #endif // of __LIBSHTTP_H__

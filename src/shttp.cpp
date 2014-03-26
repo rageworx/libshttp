@@ -20,12 +20,12 @@ using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#if defined(_WIN32)
+#ifdef _WIN32
 static WSADATA _wsData      = {0};
-static int     _wsInitCount = 0;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+
 
 #if !defined(_WIN32)
 static int strnicmp( char const * a, char const * b, int n )
@@ -44,20 +44,6 @@ SimpleHTTP::SimpleHTTP()
    _contents(NULL),
    _contents_size(0)
 {
-#ifdef _WIN32
-    if ( _wsInitCount == 0 )
-    {
-        if ( WSAStartup( 0x0202, &_wsData ) == 0 )
-        {
-            _wsInitCount++;
-        }
-        else
-        {
-            WSACleanup();
-        }
-    }
-#endif /// of _WIN32
-
     _parser = new HTTPParser();
 }
 
@@ -75,19 +61,6 @@ SimpleHTTP::~SimpleHTTP()
         _postcontent = NULL;
         _postcontentsize = 0;
     }
-
-#ifdef _WIN32
-    if ( _wsInitCount > 0 )
-    {
-        _wsInitCount--;
-    }
-
-    if ( _wsInitCount == 0 )
-    {
-        WSACleanup();
-        _wsInitCount = 0;
-    }
-#endif /// of _WIN32
 }
 
 void SimpleHTTP::httpmethod( HTTPREQMTYPE mtype )
@@ -368,3 +341,28 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         out += "\r\n";
     }
 }
+
+#ifdef _WIN32
+bool SimpleHTTP::InitWinSock()
+{
+    if ( _wsData.wVersion == 0x0202 )
+        return true;
+
+    if ( WSAStartup( 0x0202, &_wsData ) != 0 )
+    {
+        WSACleanup();
+        return false;
+    }
+
+    return true;
+}
+#endif /// of _WIN32
+
+#ifdef _WIN32
+bool SimpleHTTP::FinalWinSock()
+{
+    WSACleanup();
+    memset( &_wsData, 0, sizeof( WSADATA ) );
+    return true;
+}
+#endif /// of _WIN32

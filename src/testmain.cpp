@@ -26,6 +26,12 @@ int main( int argc, char** argv)
     printf("libHTTP test application, 2014-03-25\n");
     printf("\n");
 
+    if( SimpleHTTP::InitWinSock() == false )
+    {
+        printf("ERROR: Winsock not initialized !\n");
+        return 0;
+    }
+
     SimpleHTTP http;
     char       url[] = "http://rageworx.iptime.org/aup/test.txt";
 
@@ -60,6 +66,8 @@ int main( int argc, char** argv)
     {
         printf("failed.\n");
     }
+	
+	SimpleHTTP::FinalWinSock();
 
     return 0;
 }
