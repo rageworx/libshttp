@@ -23,7 +23,7 @@ class SimpleHTTP : public HTTPObject
     // Related in Method.
     public:
         void httpmethod( HTTPREQMTYPE mtype );
-        void content( const char* src, int srcsize );
+        void postcontent( const char* src, int srcsize );
 
     // Action
     public:
@@ -33,6 +33,7 @@ class SimpleHTTP : public HTTPObject
         HTTPREQMTYPE    httpmethod()    { return _method; }
         const char*     postcontent()   { return _postcontent; }
         const char*     contents()      { return _contents; }
+        const char*     lasterror()     { return _lasterrmsg.c_str(); }
 
     public:
         int  contentsize();
@@ -66,6 +67,9 @@ class SimpleHTTP : public HTTPObject
     protected:
         const char*     _contents;
         int             _contents_size;
+
+    protected:
+        std::string     _lasterrmsg;
 
 #ifdef _WIN32
     public:

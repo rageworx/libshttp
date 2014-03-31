@@ -71,8 +71,31 @@ void SimpleHTTP::httpmethod( HTTPREQMTYPE mtype )
     }
 }
 
+void SimpleHTTP::postcontent( const char* src, int srcsize )
+{
+    _lasterrmsg.clear();
+
+    if ( ( src != NULL ) && ( srcsize > 0 ) )
+    {
+        if ( _postcontent != NULL )
+        {
+            delete[] _postcontent;
+        }
+
+        _postcontent = new char[ srcsize + 1 ];
+        memset( _postcontent, 0, srcsize + 1 );
+        memcpy( _postcontent, src, srcsize );
+
+        return;
+    }
+
+    _lasterrmsg = "Can not allocating memory for HTTP POST.";
+}
+
 bool SimpleHTTP::request( const char* addr, unsigned short port )
 {
+    _lasterrmsg.clear();
+
     if ( addr == NULL )
         return false;
 
@@ -86,6 +109,7 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
 
     if ( host.size() == 0 )
     {
+        _lasterrmsg = "Can not parse requesting address.";
         return false;
     }
 
@@ -95,6 +119,7 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
 
     if ( opensocket() == false )
     {
+        _lasterrmsg = "Can not open socket.";
         return false;
     }
 
@@ -102,12 +127,14 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
 
     if ( makehttpheaderstr( httprequestheader ) == false )
     {
+        _lasterrmsg = "Can not make HTTP header.";
         return false;
     }
 
     int retI = send( _sockfd, httprequestheader.data(), httprequestheader.size(), 0 );
     if ( retI != httprequestheader.size() )
     {
+        _lasterrmsg = "Can not send HTTP header (socket).";
         return false;
     }
 
