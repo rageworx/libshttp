@@ -33,7 +33,7 @@ int main( int argc, char** argv)
     }
 
     SimpleHTTP http;
-    char       url[] = "http://rageworx.iptime.org/aup/test.txt";
+    char       url[] = "http://www.google.com/images/srpr/logo11w.png";
 
     printf("Requesting for %s ... ", url );
 
@@ -66,7 +66,7 @@ int main( int argc, char** argv)
     {
         printf("failed.\n");
     }
-	
+
 	SimpleHTTP::FinalWinSock();
 
     return 0;

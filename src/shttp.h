@@ -23,7 +23,7 @@ class SimpleHTTP : public HTTPObject
     // Related in Method.
     public:
         void httpmethod( HTTPREQMTYPE mtype );
-        void postcontent( const char* src, int srcsize );
+        void postcontents( const char* src, int srcsize );
 
     // Action
     public:

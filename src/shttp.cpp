@@ -71,7 +71,7 @@ void SimpleHTTP::httpmethod( HTTPREQMTYPE mtype )
     }
 }
 
-void SimpleHTTP::postcontent( const char* src, int srcsize )
+void SimpleHTTP::postcontents( const char* src, int srcsize )
 {
     _lasterrmsg.clear();
 
