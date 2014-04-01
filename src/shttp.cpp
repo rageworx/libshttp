@@ -181,7 +181,7 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
                     if ( posDiv != string::npos )
                     {
                         string hdrkey = headers[cnt].substr( 0, posDiv );
-                        string hdrval = headers[cnt].substr( posDiv + 1 );
+                        string hdrval = headers[cnt].substr( posDiv + 2 );
                         addheader( hdrkey, hdrval );
                     }
                 }
@@ -337,10 +337,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         {
             char tmpstr[80] = {0};
 
-            unsigned short mj = _postcontenttype & 0xFFFF0000;
-            unsigned short mn = _postcontenttype & 0x0000FFFF;
-
-            sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( mj, mn ) );
+            sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
             ct = tmpstr;
 
             sprintf( tmpstr, "Content-Length: %d\r\n", _postcontentsize );

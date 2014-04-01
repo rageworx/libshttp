@@ -2,7 +2,15 @@
 
 using namespace std;
 
-const char* SimpleHTTPTool::GetMIME( int mjr, int mnr )
+const char* SimpleHTTPTool::GetMIME( SHTTPContentType ctype )
+{
+    unsigned int   mjr = (unsigned int)ctype & 0xFFFF0000;
+    unsigned short mnr = (unsigned int)ctype & 0x0000FFFF;
+
+    return GetMIME( (SHTTPCT_MAJOR)mjr, (SHTTPCT_MINOR)mnr );
+}
+
+const char* SimpleHTTPTool::GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr )
 {
     static string data;
     string major;

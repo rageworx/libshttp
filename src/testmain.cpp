@@ -42,6 +42,9 @@ int main( int argc, char** argv)
     {
         printf("[ok.]\n");
 
+        string outftype;
+        string outfname;
+
         printf("headers = %d\n", http.headercount() );
         if ( http.headercount() > 0 )
         {
@@ -50,16 +53,41 @@ int main( int argc, char** argv)
                 HTTPHI tmpHI;
                 http.getheader( cnt, tmpHI );
 
-                printf("[%03d] %s = %s\n", cnt+1, tmpHI.key.c_str(), tmpHI.value.c_str() );
+                printf("[%03d] %s: %s \n", cnt+1, tmpHI.key.c_str(), tmpHI.value.c_str() );
+
+                if ( tmpHI.key == "Content-Type" )
+                {
+                    outftype = tmpHI.value;
+                    outfname = "google_logo_w.png";
+                }
             }
         }
 
-
         printf("content = %d bytes.\n", http.contentsize() );
+
 
         if ( http.contents() != NULL )
         {
-            printf("%s", http.contents() );
+            if ( outftype.size() > 0 )
+            {
+                printf("content type = %s\n", outftype.c_str() );
+
+                FILE* fp = fopen( outfname.c_str(), "wb+" );
+                if ( fp != NULL )
+                {
+                    fwrite( http.contents(), 1, http.contentsize() , fp );
+                    fclose( fp );
+                    printf("file written!\n");
+                }
+                else
+                {
+                    printf("file write failed ! \n");
+                }
+            }
+            else
+            {
+                printf("%s", http.contents() );
+            }
         }
     }
     else

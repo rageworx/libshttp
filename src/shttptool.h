@@ -11,16 +11,18 @@
 
 class SimpleHTTPTool
 {
+    typedef unsigned int    SHTTPContentType;
+
     typedef enum
     {
         APPLICATION = 0x00010000,
-        AUDIO,
-        IMAGE,
-        MESSAGE,
-        MODEL,
-        MULTIPART,
-        TEXT,
-        VIDEO
+        AUDIO       = 0x00020000,
+        IMAGE       = 0x00040000,
+        MESSAGE     = 0x00080000,
+        MODEL       = 0x00100000,
+        MULTIPART   = 0x00200000,
+        TEXT        = 0x00400000,
+        VIDEO       = 0x00800000
     }SHTTPCT_MAJOR;
 
     typedef enum
@@ -99,7 +101,8 @@ class SimpleHTTPTool
     }SHTTPCT_MINOR;
 
     public:
-        static const char* GetMIME( int mjr, int mnr );
+        static const char* GetMIME( SHTTPContentType ctype );
+        static const char* GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr );
 
 };
 
