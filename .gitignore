@@ -224,3 +224,13 @@ out/
 *.depend
 *.layout
 *.a
+
+#############
+## Images
+#############
+
+*.jpg
+*.jpeg
+*.jpe
+*.png
+*.gif
