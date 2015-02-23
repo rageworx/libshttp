@@ -142,6 +142,11 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         return false;
     }
 
+#ifdef DEBUG
+    printf("\n[DEBUG/HTTP/header]-----\n");
+    printf("%s", httprequestheader.data() );
+#endif
+
     int retI = send( _sockfd, httprequestheader.data(), httprequestheader.size(), 0 );
     if ( retI != httprequestheader.size() )
     {
@@ -152,6 +157,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     // Appends contents in POST mode.
     if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
     {
+#ifdef DEBUG
+        printf("%s", _postcontent );
+#endif
         retI = 0;
         retI = send( _sockfd, _postcontent, _postcontentsize, 0 );
         if ( retI != _postcontentsize )
@@ -160,6 +168,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
             return false;
         }
     }
+
+#ifdef DEBUG
+    printf("\n-------------------\n");
+#endif
 
     char rcvBuff[1024] = {0};
 
@@ -348,7 +360,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
                     if ( _postcontenttype == 0 )
                     {
-                        _postcontenttype = SimpleHTTPTool::TEXT | SimpleHTTPTool::HTML;
+                        _postcontenttype = SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XFORMURLENCODED;
                     }
                 }
                 break;
@@ -392,11 +404,6 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         out += fm;  /// From: & Host:
         out += ct;  /// Content-Type:
         out += cl;  /// Content-Length:
-        out += "\r\n";
-    }
-
-    if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
-    {
         out += "\r\n";
     }
 

@@ -296,6 +296,10 @@ const char* SimpleHTTPTool::GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr )
         case VCARD:
             minor = "vcard";
             break;
+
+        case XFORMURLENCODED:
+            minor = "x-www-form-urlencoded";
+            break;
     }
 
     if ( ( major.size() > 0 ) && ( minor.size() > 0 ) )

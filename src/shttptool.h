@@ -99,6 +99,8 @@ class SimpleHTTPTool
             VCARD,
             //XML = Application-XML
 
+            XFORMURLENCODED = 900   /// Customized.
+
         }SHTTPCT_MINOR;
 
     public:
