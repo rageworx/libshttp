@@ -364,6 +364,8 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         out += cl;  /// Content-Length:
         out += "\r\n";
     }
+	
+	return true;
 }
 
 #ifdef _WIN32
