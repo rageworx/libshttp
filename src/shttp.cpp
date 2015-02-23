@@ -37,6 +37,7 @@ static int strnicmp( char const * a, char const * b, int n )
 SimpleHTTP::SimpleHTTP()
  : _postcontent(NULL),
    _postcontentsize(0),
+   _postcontenttype(0),
    _parser(NULL),
    _sockfd(-1),
    _socketinuse(false),
@@ -83,13 +84,23 @@ void SimpleHTTP::postcontents( const char* src, int srcsize )
         }
 
         _postcontent = new char[ srcsize + 1 ];
-        memset( _postcontent, 0, srcsize + 1 );
-        memcpy( _postcontent, src, srcsize );
+        if ( _postcontent != NULL )
+        {
+            memset( _postcontent, 0, srcsize + 1 );
+            memcpy( _postcontent, src, srcsize );
+
+            _postcontentsize = srcsize;
+        }
 
         return;
     }
 
     _lasterrmsg = "Can not allocating memory for HTTP POST.";
+}
+
+void SimpleHTTP::posttype( unsigned t )
+{
+    _postcontenttype = t;
 }
 
 bool SimpleHTTP::request( const char* addr, unsigned short port )
@@ -136,6 +147,18 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     {
         _lasterrmsg = "Can not send HTTP header (socket).";
         return false;
+    }
+
+    // Appends contents in POST mode.
+    if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
+    {
+        retI = 0;
+        retI = send( _sockfd, _postcontent, _postcontentsize, 0 );
+        if ( retI != _postcontentsize )
+        {
+            _lasterrmsg = "Can not send POST content (socket).";
+            return false;
+        }
     }
 
     char rcvBuff[1024] = {0};
@@ -320,6 +343,13 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
                     sprintf( tmpstr, "From: %s\r\n", _targeturl.c_str() );
                     fm = tmpstr;
+                    sprintf( tmpstr, "Host: %s\r\n", _targetaddr.c_str() );     /// It need to be required !
+                    fm += tmpstr;
+
+                    if ( _postcontenttype == 0 )
+                    {
+                        _postcontenttype = SimpleHTTPTool::TEXT | SimpleHTTPTool::HTML;
+                    }
                 }
                 break;
 
@@ -335,7 +365,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         // set contents size if it exists.
         if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
         {
-            char tmpstr[80] = {0};
+            char  tmpstr[80] = {0};
 
             sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
             ct = tmpstr;
@@ -346,7 +376,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
         out  = hdr;
         out += _targeturl;
-        out += " HTTP/1.0\r\n";
+        out += " HTTP/1.1\r\n";
         out += "User-Agent: ";
 
         if ( _customuseragent.size() > 0 )
@@ -355,17 +385,22 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         }
         else
         {
-            out += "SHTTPLIB/0.1";
+            out += "libSHTTP/0.2";
         }
 
         out += "\r\n";
-        out += fm;  /// From:
+        out += fm;  /// From: & Host:
         out += ct;  /// Content-Type:
         out += cl;  /// Content-Length:
         out += "\r\n";
     }
-	
-	return true;
+
+    if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
+    {
+        out += "\r\n";
+    }
+
+    return true;
 }
 
 #ifdef _WIN32
