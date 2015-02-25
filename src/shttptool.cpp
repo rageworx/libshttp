@@ -2,6 +2,77 @@
 
 using namespace std;
 
+/* URI encode / decode source refer to Jin Qing's code on following site.
+   http://www.codeguru.com/cpp/cpp/algorithms/strings/article.php/c12759/URI-Encoding-and-Decoding.htm
+*/
+
+const char HEX2DEC_MATRIX[256] =
+{
+    /*       0  1  2  3   4  5  6  7   8  9  A  B   C  D  E  F */
+    /* 0 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 1 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 2 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 3 */  0, 1, 2, 3,  4, 5, 6, 7,  8, 9,-1,-1, -1,-1,-1,-1,
+
+    /* 4 */ -1,10,11,12, 13,14,15,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 5 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 6 */ -1,10,11,12, 13,14,15,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 7 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+
+    /* 8 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* 9 */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* A */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* B */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+
+    /* C */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* D */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* E */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1,
+    /* F */ -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1, -1,-1,-1,-1
+};
+
+const char SAFECHAR_MATRIX[256] =
+{
+    /*      0 1 2 3  4 5 6 7  8 9 A B  C D E F */
+    /* 0 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* 1 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* 2 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* 3 */ 1,1,1,1, 1,1,1,1, 1,1,0,0, 0,0,0,0,
+
+    /* 4 */ 0,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1,
+    /* 5 */ 1,1,1,1, 1,1,1,1, 1,1,1,0, 0,0,0,0,
+    /* 6 */ 0,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1,
+    /* 7 */ 1,1,1,1, 1,1,1,1, 1,1,1,0, 0,0,0,0,
+
+    /* 8 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* 9 */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* A */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* B */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+
+    /* C */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* D */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* E */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    /* F */ 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0
+};
+
+const char DEC2HEX_MATRIX[] = "0123456789ABCDEF";
+
+////////////////////////////////////////////////////////////////////////////////
+
+unsigned long long longstrlen( const char* c )
+{
+    unsigned long long ret = 0;
+
+    while ( *c != NULL )
+    {
+        c++;
+        ret++;
+    }
+
+    return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 const char* SimpleHTTPTool::GetMIME( SHTTPContentType ctype )
 {
     unsigned long  mjr = (unsigned int)ctype & 0xFFFF0000;
@@ -314,4 +385,64 @@ const char* SimpleHTTPTool::GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr )
     }
 
     return data.c_str();
+}
+
+void SimpleHTTPTool::ConvertStringToURI( const char* str, std::string &uri )
+{
+    if ( str != NULL )
+    {
+        unsigned long long strlength = longstrlen( str );
+
+        uri.clear();
+
+        for( unsigned long long cnt=0; cnt<strlength; cnt++ )
+        {
+            if ( SAFECHAR_MATRIX[ str[cnt] ] >= 0 )
+            {
+                char conv[4] = {NULL};
+
+                conv[0] = '%';
+                conv[1] = DEC2HEX_MATRIX[ str[cnt] >> 4 ];
+                conv[2] = DEC2HEX_MATRIX[ str[cnt] & 0x0F ];
+
+                uri += conv;
+            }
+            else
+            {
+                uri += str[cnt];
+            }
+        }
+    }
+}
+
+void SimpleHTTPTool::ConvertURIToString( const char* uri, std::string &str )
+{
+    if ( uri != NULL )
+    {
+        unsigned long long urilength = longstrlen(uri);
+
+        str.clear();
+
+        for( unsigned long long cnt=0; cnt<urilength; cnt++ )
+        {
+            if ( ( uri[cnt] == '%' ) && ( cnt+2 < urilength ) )
+            {
+                char dec1 = HEX2DEC_MATRIX[ uri[cnt + 1] ];
+                char dec2 = HEX2DEC_MATRIX[ uri[cnt + 2] ];
+                if ( ( dec1 != -1 ) && ( dec2 != -1 ) )
+                {
+                    char out = ( dec1 << 4 ) + dec2;
+                    str += out;
+                }
+                else
+                {
+                    str += uri[cnt];
+                }
+            }
+            else
+            {
+                str += uri[cnt];
+            }
+        }
+    }
 }

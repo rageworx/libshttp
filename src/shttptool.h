@@ -106,6 +106,8 @@ class SimpleHTTPTool
     public:
         static const char* GetMIME( SHTTPContentType ctype );
         static const char* GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr );
+        static void        ConvertStringToURI( const char* str, std::string &uri );
+        static void        ConvertURIToString( const char* uri, std::string &str );
 
 };
 
