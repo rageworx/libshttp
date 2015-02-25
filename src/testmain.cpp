@@ -33,11 +33,16 @@ int main( int argc, char** argv)
     }
 
     SimpleHTTP http;
-    char       url[] = "http://www.google.com/images/srpr/logo11w.png";
+    char       url[]    = "http://167.88.112.71/test.php";
+    //char       posts[]  = "user=developer&passwd=developerpass&req_action=none&req_param=none";
+    char       posts[]  = "user=developer&passwd=developerpass&req_action=echo&req_param=testme_string_ok";
+
 
     printf("Requesting for %s ... ", url );
 
-    http.httpmethod( HTTP_REQ_METHOD_GET );
+    http.httpmethod( HTTP_REQ_METHOD_POST );
+    http.postcontents( posts, strlen(posts) );
+
     if ( http.request( url ) == true )
     {
         printf("[ok.]\n");
@@ -54,12 +59,6 @@ int main( int argc, char** argv)
                 http.getheader( cnt, tmpHI );
 
                 printf("[%03d] %s: %s \n", cnt+1, tmpHI.key.c_str(), tmpHI.value.c_str() );
-
-                if ( tmpHI.key == "Content-Type" )
-                {
-                    outftype = tmpHI.value;
-                    outfname = "google_logo_w.png";
-                }
             }
         }
 

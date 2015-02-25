@@ -96,6 +96,10 @@ void SimpleHTTP::postcontents( const char* src, int srcsize )
     }
 
     _lasterrmsg = "Can not allocating memory for HTTP POST.";
+    if ( _event != NULL )
+    {
+        _event->OnError( _lasterrmsg.c_str() );
+    }
 }
 
 void SimpleHTTP::posttype( unsigned t )
@@ -121,6 +125,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     if ( host.size() == 0 )
     {
         _lasterrmsg = "Can not parse requesting address.";
+        if ( _event != NULL )
+        {
+            _event->OnError( _lasterrmsg.c_str() );
+        }
         return false;
     }
 
@@ -131,6 +139,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     if ( opensocket() == false )
     {
         _lasterrmsg = "Can not open socket.";
+        if ( _event != NULL )
+        {
+            _event->OnError( _lasterrmsg.c_str() );
+        }
         return false;
     }
 
@@ -139,6 +151,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     if ( makehttpheaderstr( httprequestheader ) == false )
     {
         _lasterrmsg = "Can not make HTTP header.";
+        if ( _event != NULL )
+        {
+            _event->OnError( _lasterrmsg.c_str() );
+        }
         return false;
     }
 
@@ -151,6 +167,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     if ( retI != httprequestheader.size() )
     {
         _lasterrmsg = "Can not send HTTP header (socket).";
+        if ( _event != NULL )
+        {
+            _event->OnError( _lasterrmsg.c_str() );
+        }
         return false;
     }
 
@@ -165,6 +185,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         if ( retI != _postcontentsize )
         {
             _lasterrmsg = "Can not send POST content (socket).";
+            if ( _event != NULL )
+            {
+                _event->OnError( _lasterrmsg.c_str() );
+            }
             return false;
         }
     }
@@ -186,6 +210,11 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
             for( int cnt=0; cnt<retI; cnt++ )
             {
                 _rcvData.push_back( rcvBuff[cnt] );
+            }
+
+            if ( _event != NULL )
+            {
+                _event->OnRead( _rcvData.size(), _contents_size );
             }
         }
         else
@@ -306,6 +335,12 @@ bool SimpleHTTP::opensocket()
         {
             _socketPossible = true;
         }
+
+        if ( _event != NULL )
+        {
+            _event->OnConnect();
+        }
+
     }
 
     return _socketPossible;
@@ -326,6 +361,10 @@ void SimpleHTTP::closesocket()
             _socketPossible = false;
         }
 
+        if ( _event != NULL )
+        {
+            _event->OnDisconnect();
+        }
     }
 }
 
