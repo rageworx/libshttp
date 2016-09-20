@@ -107,6 +107,11 @@ void SimpleHTTP::posttype( unsigned t )
     _postcontenttype = t;
 }
 
+void SimpleHTTP::charset( const char* cs )
+{
+    _charset = cs;
+}
+
 bool SimpleHTTP::request( const char* addr, unsigned short port )
 {
     _lasterrmsg.clear();
@@ -418,7 +423,17 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         {
             char  tmpstr[80] = {0};
 
-            sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
+            if ( _charset.size() == 0 )
+            {
+                sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
+            }
+            else
+            {
+                sprintf( tmpstr,
+                         "Content-Type: %s; charset=%s\r\n",
+                         SimpleHTTPTool::GetMIME( _postcontenttype ),
+                         _charset.c_str() );
+            }
             ct = tmpstr;
 
             sprintf( tmpstr, "Content-Length: %d\r\n", _postcontentsize );

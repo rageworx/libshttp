@@ -7,6 +7,9 @@
 // ============================================================================
 // (C)Copyright 2012-2013 Raphael Kim (rageworx@gmail.com)
 //
+// update : 2016-09-20
+//          added charset= xxx option.
+//
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "shttpdef.h"
@@ -25,6 +28,7 @@ class SimpleHTTP : public HTTPObject
         void httpmethod( HTTPREQMTYPE mtype );
         void postcontents( const char* src, int srcsize );
         void posttype( unsigned t );
+        void charset( const char* cs );
 
     // Action
     public:
@@ -35,6 +39,7 @@ class SimpleHTTP : public HTTPObject
         const char*     postcontent()   { return _postcontent; }
         const char*     contents()      { return _contents; }
         const char*     lasterror()     { return _lasterrmsg.c_str(); }
+        const char*     charset()       { return _charset.c_str(); }
 
     public:
         int  contentsize();
@@ -61,6 +66,7 @@ class SimpleHTTP : public HTTPObject
         unsigned short  _targetport;
         std::string     _targetremappedaddr;
         std::string     _customuseragent;
+        std::string     _charset;
 
     protected:
         std::string     _rcvData;

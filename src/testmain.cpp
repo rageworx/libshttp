@@ -23,8 +23,8 @@ using namespace std;
 
 int main( int argc, char** argv)
 {
-    printf("libHTTP test application, 2014-03-25\n");
-    printf("\n");
+    printf("DRTECH HASP TIME PERIOD KEY MAKER, TEST HTTP REQUEST ---\n");
+    printf("(C)2016 Raph.K.\n\n");
 
     if( SimpleHTTP::InitWinSock() == false )
     {
@@ -33,17 +33,23 @@ int main( int argc, char** argv)
     }
 
     SimpleHTTP http;
-    char       url[]    = "http://167.88.112.71/test.php";
-    //char       posts[]  = "user=developer&passwd=developerpass&req_action=none&req_param=none";
-    char       posts[]  = "user=developer&passwd=developerpass&req_action=echo&req_param=testme_string_ok";
 
+    char url[]   = "http://192.168.2.154/ems/v73/ws/login.ws";
+    char content[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\r"
+                     "<authenticationDetail>\n\r"
+                     "\t<userName>admin</userName>\n\r"
+                     "\t<password>admin</password>\n\r"
+                     "</authenticationDetail>";
 
     printf("Requesting for %s ... ", url );
 
     http.httpmethod( HTTP_REQ_METHOD_POST );
-    http.postcontents( posts, strlen(posts) );
+    http.postcontents( content, strlen(content) );
+    //http.posttype( SimpleHTTPTool::TEXT | SimpleHTTPTool::HTML );
+    http.posttype( SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XML );
+    http.charset( "utf-8" );
 
-    if ( http.request( url ) == true )
+    if ( http.request( url, 8080 ) == true )
     {
         printf("[ok.]\n");
 
