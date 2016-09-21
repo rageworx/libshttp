@@ -72,7 +72,7 @@ void SimpleHTTP::httpmethod( HTTPREQMTYPE mtype )
     }
 }
 
-void SimpleHTTP::postcontents( const char* src, int srcsize )
+void SimpleHTTP::postcontents( const char* src, long long srcsize )
 {
     _lasterrmsg.clear();
 
@@ -270,7 +270,7 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     return true;
 }
 
-int  SimpleHTTP::contentsize()
+long long SimpleHTTP::contentsize()
 {
     return _contents_size;
 }
@@ -373,6 +373,10 @@ void SimpleHTTP::closesocket()
     }
 }
 
+/*
+** See arguments in
+** https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+*/
 bool SimpleHTTP::makehttpheaderstr( string &out )
 {
     if ( _headeritems.size() > 0 )
@@ -387,6 +391,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         // set method type in header.
         switch( _method )
         {
+            default:
             case HTTP_REQ_METHOD_GET:
                 hdr = "GET ";
                 break;
@@ -409,6 +414,37 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
                 }
                 break;
 
+            case HTTP_REQ_METHOD_PUT:
+                hdr = "PUT ";
+                break;
+
+            case HTTP_REQ_METHOD_DELETE:
+                hdr = "DELETE ";
+                break;
+
+            case HTTP_REQ_METHOD_OPTIONS:
+                {
+                    hdr = "OPTIONS ";
+
+                    if ( _postcontenttype == 0 )
+                    {
+                        _postcontenttype = SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XFORMURLENCODED;
+                    }
+                }
+                break;
+
+            case HTTP_REQ_METHOD_HEAD:
+                hdr = "HEAD ";
+                break;
+
+            case HTTP_REQ_METHOD_TRACE:
+                hdr = "TRACE ";
+                break;
+
+            case HTTP_REQ_METHOD_CONNECT:
+                hdr = "CONNECT ";
+                break;
+
             case HTTP_REQ_METHOD_SENDFILE:
                 hdr = "FILE ";
                 break;
@@ -416,6 +452,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
             case HTTP_REQ_METHOD_GETFILE:
                 hdr = "FILE ";
                 break;
+
         }
 
         // set contents size if it exists.
@@ -436,7 +473,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
             }
             ct = tmpstr;
 
-            sprintf( tmpstr, "Content-Length: %d\r\n", _postcontentsize );
+            sprintf( tmpstr, "Content-Length: %lld\r\n", _postcontentsize );
             cl = tmpstr;
         }
 

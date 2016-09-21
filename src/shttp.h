@@ -26,7 +26,7 @@ class SimpleHTTP : public HTTPObject
     // Related in Method.
     public:
         void httpmethod( HTTPREQMTYPE mtype );
-        void postcontents( const char* src, int srcsize );
+        void postcontents( const char* src, long long srcsize );
         void posttype( unsigned t );
         void charset( const char* cs );
 
@@ -42,7 +42,7 @@ class SimpleHTTP : public HTTPObject
         const char*     charset()       { return _charset.c_str(); }
 
     public:
-        int  contentsize();
+        long long contentsize();
 
     protected:
         void splitaddress( const char* addr, std::string &host, std::string&url );
@@ -53,7 +53,7 @@ class SimpleHTTP : public HTTPObject
     protected:
         unsigned        _postcontenttype;
         char*           _postcontent;
-        int             _postcontentsize;
+        long long       _postcontentsize;
         HTTPParser*     _parser;
         bool            _socketinuse;
 
@@ -73,7 +73,7 @@ class SimpleHTTP : public HTTPObject
 
     protected:
         const char*     _contents;
-        int             _contents_size;
+        long long       _contents_size;
 
     protected:
         std::string     _lasterrmsg;

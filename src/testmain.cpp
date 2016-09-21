@@ -34,22 +34,17 @@ int main( int argc, char** argv)
 
     SimpleHTTP http;
 
-    char url[]   = "http://192.168.2.154/ems/v73/ws/login.ws";
-    char content[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\r"
-                     "<authenticationDetail>\n\r"
-                     "\t<userName>admin</userName>\n\r"
-                     "\t<password>admin</password>\n\r"
-                     "</authenticationDetail>";
+    char url[]   = "http://127.0.0.1/index.php";
+    char content[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test value=30241 />";
 
     printf("Requesting for %s ... ", url );
 
     http.httpmethod( HTTP_REQ_METHOD_POST );
     http.postcontents( content, strlen(content) );
-    //http.posttype( SimpleHTTPTool::TEXT | SimpleHTTPTool::HTML );
     http.posttype( SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XML );
     http.charset( "utf-8" );
 
-    if ( http.request( url, 8080 ) == true )
+    if ( http.request( url, 80 ) == true )
     {
         printf("[ok.]\n");
 
