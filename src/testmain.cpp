@@ -12,8 +12,8 @@
 using namespace std;
 
 #if defined(_WIN32)
-    #include <windows.h>
     #include <winsock2.h>
+    #include <windows.h>
 #else
     #include <unistd.h>
     #include <fcntl.h>
@@ -63,7 +63,7 @@ int main( int argc, char** argv)
             }
         }
 
-        printf("content = %d bytes.\n", http.contentsize() );
+        printf("content = %lld bytes.\n", http.contentsize() );
 
 
         if ( http.contents() != NULL )
