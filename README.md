@@ -1,5 +1,20 @@
 #libshttp
+ 
+ * A simple std c++ library for using HTTP/1.0 methods with TCP/IP socket.
+ * This project is continuously working on. 
 
- * A library for using HTTP/1.0 GET,POST method with TCP/IP socket in C++.
- * This project is not completed yet.
+## Latest version 
+ * 2016-10-10, version 0.3 
+
+## Supported methods 
+ 1. GET
+ 2. POST
+ 3. PUT
+ 4. DELETE
+ 5. OPTIONS
+ 6. HEAD
+ 7. TRACE
+ 8. CONNECT
+ 9. SENDFILE
+ 10. GETFILE
 
