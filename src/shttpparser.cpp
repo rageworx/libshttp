@@ -257,18 +257,41 @@ void HTTPParser::getcookie( std::string &ck )
 {
     if ( _headerlines.size() > 0 )
     {
+        string outstr;
+        int    ckcnt = 0;
+
         for( int cnt=0; cnt<_headerlines.size(); cnt++ )
         {
             string::size_type clpos = _headerlines[cnt].find("Set-Cookie: ");
             if ( clpos != string::npos )
             {
                 string::size_type subPos = clpos + 11;
-                string::size_type subLen = _headerlines[cnt].size() - subPos;
+                string::size_type subEnd = _headerlines[cnt].find_first_of( ";", subPos );
+                string::size_type subLen = string::npos;
 
-                ck = _headerlines[cnt].substr( subPos, subLen );
-                httpparsertool_trimspace( ck );
+                if ( subEnd != string::npos )
+                {
+                    subLen = subEnd - subPos;
+                }
+                else
+                {
+                    subLen = _headerlines[cnt].size() - subPos;
+                }
+
+                string tmpstr = _headerlines[cnt].substr( subPos, subLen );
+                httpparsertool_trimspace( tmpstr );
+
+                if ( ckcnt > 0 )
+                {
+                    outstr += "; ";
+                }
+
+                outstr += tmpstr;
+                ckcnt++;
             }
         }
+
+        ck = outstr;
     }
 }
 

@@ -25,6 +25,7 @@ class SimpleHTTP : public HTTPObject
 
     // Related in Method.
     public:
+        bool keepconnected( bool e );
         void httpmethod( HTTPREQMTYPE mtype );
         void postcontents( const char* src, long long srcsize );
         void postcontenttype( unsigned t );
@@ -33,6 +34,7 @@ class SimpleHTTP : public HTTPObject
     // Action
     public:
         bool request( const char* addr, unsigned short port = 80);
+        bool closeconnection(); /// if it works when keepconnected toggled.
 
     public:
         HTTPREQMTYPE    httpmethod()    { return _method; }
@@ -42,6 +44,7 @@ class SimpleHTTP : public HTTPObject
         const char*     charset()       { return _charset.c_str(); }
         int             statuscode()    { return _statuscode; }
         const char*     statusmsg()     { return _statusmsg.c_str(); }
+        bool            keepconnected() { return _keepconnected; }
 
     public:
         long long contentsize();
@@ -75,6 +78,9 @@ class SimpleHTTP : public HTTPObject
         std::string     _targetremappedaddr;
         std::string     _customuseragent;
         std::string     _charset;
+        bool            _requestworking;
+        bool            _keepconnected;
+        bool            _connectionalived;
 
     protected:
         std::string     _rcvData;

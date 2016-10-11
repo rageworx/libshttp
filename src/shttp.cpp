@@ -21,6 +21,14 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
+    #define SOCK_NOCONN     NULL
+#else
+    #define SOCK_NOCONN     -1
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
 static WSADATA _wsData      = {0};
 #endif
 
@@ -39,18 +47,24 @@ SimpleHTTP::SimpleHTTP()
    _postcontentsize(0),
    _postcontenttype(0),
    _parser(NULL),
-   _sockfd(-1),
+   _sockfd(SOCK_NOCONN),
    _socketinuse(false),
    _socketPossible(true),
    _contents(NULL),
    _contents_size(0),
-   _rcvDataLocked(false)
+   _requestworking(false),
+   _rcvDataLocked(false),
+   _keepconnected(false),
+   _connectionalived(false)
 {
     _parser = new HTTPParser();
 }
 
 SimpleHTTP::~SimpleHTTP()
 {
+    closeconnection();
+    closesocket();
+
     if ( _parser != NULL )
     {
         delete _parser;
@@ -65,6 +79,24 @@ SimpleHTTP::~SimpleHTTP()
     }
 
     _rcvData.clear();
+}
+
+bool SimpleHTTP::keepconnected( bool e )
+{
+    if ( _requestworking == true )
+        return false;
+
+    if ( _keepconnected != e )
+    {
+        _keepconnected = e;
+
+        if ( ( _keepconnected == false ) && ( _connectionalived == true ) )
+        {
+            closeconnection();
+        }
+    }
+
+    return _keepconnected;
 }
 
 void SimpleHTTP::httpmethod( HTTPREQMTYPE mtype )
@@ -97,6 +129,16 @@ void SimpleHTTP::postcontents( const char* src, long long srcsize )
 
         return;
     }
+    else
+    {
+        if ( _postcontent != NULL )
+        {
+            delete[] _postcontent;
+            _postcontent = NULL;
+        }
+
+        _postcontentsize = 0;
+    }
 
     _lasterrmsg = "Can not allocating memory for HTTP POST.";
     if ( _event != NULL )
@@ -128,6 +170,8 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     if ( _rcvDataLocked == true )
         return false;
 
+    _requestworking = true;
+
     string host;
     string url;
 
@@ -140,6 +184,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         {
             _event->OnError( _lasterrmsg.c_str() );
         }
+
+        _requestworking = false;
+
         return false;
     }
 
@@ -154,6 +201,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         {
             _event->OnError( _lasterrmsg.c_str() );
         }
+
+        _requestworking = false;
+
         return false;
     }
 
@@ -166,12 +216,16 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         {
             _event->OnError( _lasterrmsg.c_str() );
         }
+
+        _requestworking = false;
+
         return false;
     }
 
 #ifdef DEBUG
     printf("\n[DEBUG/HTTP/header]-----\n");
     printf("%s", httprequestheader.data() );
+    printf("\n-------[DEBUG/HTTP/header]\n");
 #endif
 
     int retI = send( _sockfd, httprequestheader.data(), httprequestheader.size(), 0 );
@@ -182,6 +236,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         {
             _event->OnError( _lasterrmsg.c_str() );
         }
+
+        _requestworking = false;
+
         return false;
     }
 
@@ -189,7 +246,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
     {
 #ifdef DEBUG
+        printf("\n[DEBUG/HTTP/postcontent]-----\n");
         printf("%s", _postcontent );
+        printf("\n-------[DEBUG/HTTP/postcontent]\n");
 #endif
         retI = 0;
         retI = send( _sockfd, _postcontent, _postcontentsize, 0 );
@@ -200,6 +259,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
             {
                 _event->OnError( _lasterrmsg.c_str() );
             }
+
+            _requestworking = false;
+
             return false;
         }
     }
@@ -235,7 +297,12 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         if ( retI <= 0 )
         {
             _rcvData.push_back( 0 );
-            closesocket();
+
+            if ( _keepconnected == false )
+            {
+                closesocket();
+            }
+
             break;
         }
     }
@@ -253,6 +320,10 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
             {
                 resetheaderitem();
 
+#ifdef DEBUG
+                printf("\n[DEBUG/HTTP/recv.headers]-----\n");
+#endif
+
                 for( int cnt=0; cnt<headers.size(); cnt++ )
                 {
                     string::size_type posDiv = headers[cnt].find(": ");
@@ -261,8 +332,14 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
                         string hdrkey = headers[cnt].substr( 0, posDiv );
                         string hdrval = headers[cnt].substr( posDiv + 2 );
                         addheader( hdrkey, hdrval );
+#ifdef DEBUG
+                        printf("%s : %s\n", hdrkey.c_str(), hdrval.c_str() );
+#endif
                     }
                 }
+#ifdef DEBUG
+                printf("\n-------[DEBUG/HTTP/recv.headers]\n");
+#endif
             }
 
             // Check Cookie
@@ -285,9 +362,22 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         }
     }
 
+    _requestworking = false;
     _rcvDataLocked = false;
 
     return true;
+}
+
+bool SimpleHTTP::closeconnection()
+{
+    if ( _requestworking == true )
+        return false;
+
+    if ( _connectionalived == true )
+    {
+        closesocket();
+        _connectionalived = false;
+    }
 }
 
 long long SimpleHTTP::contentsize()
@@ -353,9 +443,16 @@ void SimpleHTTP::splitaddress( const char* addr, std::string &host, std::string 
 
 bool SimpleHTTP::opensocket()
 {
-    if ( _sockfd >= 0 )
+    if ( _sockfd != SOCK_NOCONN )
     {
-        closesocket();
+        if ( _keepconnected == false )
+        {
+            closesocket();
+        }
+        else
+        {
+            return true;
+        }
     }
 
     _sockfd = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
@@ -403,6 +500,7 @@ void SimpleHTTP::closesocket()
 #else
         close( _sockfd );
 #endif
+        _sockfd = SOCK_NOCONN;
 
         if ( _socketPossible == true )
         {
