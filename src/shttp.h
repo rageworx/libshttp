@@ -45,6 +45,7 @@ class SimpleHTTP : public HTTPObject
 
     public:
         long long contentsize();
+        void      clearcontents();
 
     public:
         void resetcookie();
@@ -77,6 +78,7 @@ class SimpleHTTP : public HTTPObject
 
     protected:
         std::string     _rcvData;
+        bool            _rcvDataLocked;
 
     protected:
         int             _statuscode;

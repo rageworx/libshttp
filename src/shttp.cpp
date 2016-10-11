@@ -43,7 +43,8 @@ SimpleHTTP::SimpleHTTP()
    _socketinuse(false),
    _socketPossible(true),
    _contents(NULL),
-   _contents_size(0)
+   _contents_size(0),
+   _rcvDataLocked(false)
 {
     _parser = new HTTPParser();
 }
@@ -122,6 +123,9 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         return false;
 
     if ( port == 0 )
+        return false;
+
+    if ( _rcvDataLocked == true )
         return false;
 
     string host;
@@ -204,6 +208,7 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     printf("\n-------------------\n");
 #endif
 
+    _rcvDataLocked = true;
     _rcvData.clear();
 
     char rcvBuff[1024] = {0};
@@ -280,12 +285,25 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
         }
     }
 
+    _rcvDataLocked = false;
+
     return true;
 }
 
 long long SimpleHTTP::contentsize()
 {
     return _contents_size;
+}
+
+void SimpleHTTP::clearcontents()
+{
+    if ( _rcvDataLocked == false )
+    {
+        _rcvData.clear();
+
+        _contents = NULL;
+        _contents_size = NULL;
+    }
 }
 
 void SimpleHTTP::resetcookie()
