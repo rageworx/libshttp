@@ -22,7 +22,7 @@ typedef enum
     HTTPSTAT_PARTIALCONTENTS,
     HTTPSTAT_MULTISTATUS,
     HTTPSTAT_ALREADYREPORTED,
-    HTTPSTAT_IMUSED         = 226
+    HTTPSTAT_IMUSED         = 226,
 
     // -- Redirection
     HTTPSTAT_MC             = 300,  /// == Multiple choices
@@ -41,7 +41,7 @@ typedef enum
     HTTPSTAT_PAYMENTREQ,
     HTTPSTAT_FORBIDDEN,
     HTTPSTAT_NOTFOUND,
-    HTTPSTAT_MNA                    /// == Method Not Allowed
+    HTTPSTAT_MNA,                   /// == Method Not Allowed
     HTTPSTAT_NOTACCEPT,
     HTTPSTAT_PROXYAR,               /// == Proxy Authentication Required.
     HTTPSTAT_REQTIMEOUT,
