@@ -102,7 +102,7 @@ void SimpleHTTP::postcontents( const char* src, long long srcsize )
     }
 }
 
-void SimpleHTTP::posttype( unsigned t )
+void SimpleHTTP::postcontenttype( unsigned t )
 {
     _postcontenttype = t;
 }
@@ -430,7 +430,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
                     if ( _postcontenttype == 0 )
                     {
-                        _postcontenttype = SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XFORMURLENCODED;
+                        _postcontenttype = SimpleHTTPContentType::APPLICATION | SimpleHTTPContentType::XFORMURLENCODED;
                     }
                 }
                 break;
@@ -449,7 +449,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
                     if ( _postcontenttype == 0 )
                     {
-                        _postcontenttype = SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XFORMURLENCODED;
+                        _postcontenttype = SimpleHTTPContentType::APPLICATION | SimpleHTTPContentType::XFORMURLENCODED;
                     }
                 }
                 break;

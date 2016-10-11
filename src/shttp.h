@@ -27,7 +27,7 @@ class SimpleHTTP : public HTTPObject
     public:
         void httpmethod( HTTPREQMTYPE mtype );
         void postcontents( const char* src, long long srcsize );
-        void posttype( unsigned t );
+        void postcontenttype( unsigned t );
         void charset( const char* cs );
 
     // Action

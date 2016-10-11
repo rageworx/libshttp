@@ -78,10 +78,10 @@ const char* SimpleHTTPTool::GetMIME( SHTTPContentType ctype )
     unsigned long  mjr = (unsigned int)ctype & 0xFFFF0000;
     unsigned short mnr = (unsigned int)ctype & 0x0000FFFF;
 
-    return GetMIME( (SHTTPCT_MAJOR)mjr, (SHTTPCT_MINOR)mnr );
+    return GetMIME( (SimpleHTTPContentType::SHTTPCT_MAJOR)mjr, (SimpleHTTPContentType::SHTTPCT_MINOR)mnr );
 }
 
-const char* SimpleHTTPTool::GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr )
+const char* SimpleHTTPTool::GetMIME( SimpleHTTPContentType::SHTTPCT_MAJOR mjr, SimpleHTTPContentType::SHTTPCT_MINOR mnr )
 {
     static string data;
     string major;
@@ -89,286 +89,286 @@ const char* SimpleHTTPTool::GetMIME( SHTTPCT_MAJOR mjr, SHTTPCT_MINOR mnr )
 
     switch( mjr )
     {
-        case APPLICATION:
+        case SimpleHTTPContentType::APPLICATION:
             major = "application";
             break;
 
-        case AUDIO:
+        case SimpleHTTPContentType::AUDIO:
             major = "audio";
             break;
 
-        case IMAGE:
+        case SimpleHTTPContentType::IMAGE:
             major = "image";
             break;
 
-        case MESSAGE:
+        case SimpleHTTPContentType::MESSAGE:
             major = "message";
             break;
 
-        case MODEL:
+        case SimpleHTTPContentType::MODEL:
             major = "model";
             break;
 
-        case MULTIPART:
+        case SimpleHTTPContentType::MULTIPART:
             major = "multipart";
             break;
 
-        case TEXT:
+        case SimpleHTTPContentType::TEXT:
             major = "text";
             break;
 
-        case VIDEO:
+        case SimpleHTTPContentType::VIDEO:
             major = "video";
             break;
     }
 
     switch( mnr )
     {
-        case ATOM_FEEDS:
+        case SimpleHTTPContentType::ATOM_FEEDS:
             minor = "atom+xml";
             break;
 
-        case ECMASCRIPT:
+        case SimpleHTTPContentType::ECMASCRIPT:
             minor = "ecmascript";
             break;
 
-        case EDI_X12:
+        case SimpleHTTPContentType::EDI_X12:
             minor = "EDI-X12";
             break;
 
-        case EDIFACT:
+        case SimpleHTTPContentType::EDIFACT:
             minor = "EDIFACT";
             break;
 
-        case JSON:
+        case SimpleHTTPContentType::JSON:
             minor = "json";
             break;
 
-        case JAVASCRIPT:
+        case SimpleHTTPContentType::JAVASCRIPT:
             minor = "javascript";
             break;
 
-        case OCTET_STREAM:
+        case SimpleHTTPContentType::OCTET_STREAM:
             minor = "octet-stream";
             break;
 
-        case OGG:
+        case SimpleHTTPContentType::OGG:
             minor = "ogg";
             break;
 
-        case PDF:
+        case SimpleHTTPContentType::PDF:
             minor = "pdf";
             break;
 
-        case POSTSCRIPT:
+        case SimpleHTTPContentType::POSTSCRIPT:
             minor = "postscript";
             break;
 
-        case RDF_XML:
+        case SimpleHTTPContentType::RDF_XML:
             minor = "rdf+xml";
             break;
 
-        case RSS_XML:
+        case SimpleHTTPContentType::RSS_XML:
             minor = "rss+xml";
             break;
 
-        case SOAP_XML:
+        case SimpleHTTPContentType::SOAP_XML:
             minor = "soap+xml";
             break;
 
-        case FONT_WOFF:
+        case SimpleHTTPContentType::FONT_WOFF:
             minor = "font-woff";
             break;
 
-        case XHTML_XML:
+        case SimpleHTTPContentType::XHTML_XML:
             minor = "xhtml+xml";
             break;
 
-        case XML:
+        case SimpleHTTPContentType::XML:
             minor = "xml";
             break;
 
-        case XML_DTD:
+        case SimpleHTTPContentType::XML_DTD:
             minor = "xml-dtd";
             break;
 
-        case XOP_XML:
+        case SimpleHTTPContentType::XOP_XML:
             minor = "xop-xml";
             break;
 
-        case ZIP:
+        case SimpleHTTPContentType::ZIP:
             minor = "zip";
             break;
 
-        case GZIP:
+        case SimpleHTTPContentType::GZIP:
             minor = "gzip";
             break;
 
-        case BASIC:
+        case SimpleHTTPContentType::BASIC:
             minor = "basic";
             break;
 
-        case L24:
+        case SimpleHTTPContentType::L24:
             minor = "L24";
             break;
 
-        case MP4:
+        case SimpleHTTPContentType::MP4:
             minor = "mp4";
             break;
 
-        case MPEG:
+        case SimpleHTTPContentType::MPEG:
             minor = "mpeg";
             break;
 
-        case VORBIS:
+        case SimpleHTTPContentType::VORBIS:
             minor = "vorbis";
             break;
 
-        case VND_REALAUDIO:
+        case SimpleHTTPContentType::VND_REALAUDIO:
             minor = "vnd.rn-realaudio";
             break;
 
-        case VND_WAVE:
+        case SimpleHTTPContentType::VND_WAVE:
             minor = "vnd.wave";
             break;
 
-        case WEBM:
+        case SimpleHTTPContentType::WEBM:
             minor = "webm";
             break;
 
-        case QUICKTIME:
+        case SimpleHTTPContentType::QUICKTIME:
             minor = "quicktime";
             break;
 
-        case X_MATROSKA:
+        case SimpleHTTPContentType::X_MATROSKA:
             minor = "x-matroska";
             break;
 
-        case X_MS_WMV:
+        case SimpleHTTPContentType::X_MS_WMV:
             minor = "x-ms-wmv";
             break;
 
-        case X_FLV:
+        case SimpleHTTPContentType::X_FLV:
             minor = "x-flv";
             break;
 
-        case GIF:
+        case SimpleHTTPContentType::GIF:
             minor = "gif";
             break;
 
-        case JPEG:
+        case SimpleHTTPContentType::JPEG:
             minor = "jpeg";
             break;
 
-        case PJPEG:
+        case SimpleHTTPContentType::PJPEG:
             minor = "pjpeg";
             break;
 
-        case PNG:
+        case SimpleHTTPContentType::PNG:
             minor = "png";
             break;
 
-        case SVG:
+        case SimpleHTTPContentType::SVG:
             minor = "svg+xml";
             break;
 
-        case TIFF:
+        case SimpleHTTPContentType::TIFF:
             minor = "tiff";
             break;
 
-        case HTTP:
+        case SimpleHTTPContentType::HTTP:
             minor = "http";
             break;
 
-        case IMDN:
+        case SimpleHTTPContentType::IMDN:
             minor = "imdn+xml";
             break;
 
-        case PARTIAL:
+        case SimpleHTTPContentType::PARTIAL:
             minor = "partial";
             break;
 
-        case RFC822:
+        case SimpleHTTPContentType::RFC822:
             minor = "rfc822";
             break;
 
-        case IGES:
+        case SimpleHTTPContentType::IGES:
             minor = "iges";
             break;
 
-        case MESH:
+        case SimpleHTTPContentType::MESH:
             minor = "mesh";
             break;
 
-        case VRML:
+        case SimpleHTTPContentType::VRML:
             minor = "vrml";
             break;
 
-        case X3D_BINARY:
+        case SimpleHTTPContentType::X3D_BINARY:
             minor = "x3d+binary";
             break;
 
-        case X3D_FASTINFOSET:
+        case SimpleHTTPContentType::X3D_FASTINFOSET:
             minor = "x3d+fastinfoset";
             break;
 
-        case X3D_VRML:
+        case SimpleHTTPContentType::X3D_VRML:
             minor = "x3d-vrml";
             break;
 
-        case X3D_XML:
+        case SimpleHTTPContentType::X3D_XML:
             minor = "x3d+xml";
             break;
 
-        case MIXED:
+        case SimpleHTTPContentType::MIXED:
             minor = "mixed";
             break;
 
-        case ALTERNATIVE:
+        case SimpleHTTPContentType::ALTERNATIVE:
             minor = "alternative";
             break;
 
-        case RELATED:
+        case SimpleHTTPContentType::RELATED:
             minor = "related";
             break;
 
-        case FORM_DATA:
+        case SimpleHTTPContentType::FORM_DATA:
             minor = "form-data";
             break;
 
-        case SIGNED:
+        case SimpleHTTPContentType::SIGNED:
             minor = "signed";
             break;
 
-        case ENCRYPTED:
+        case SimpleHTTPContentType::ENCRYPTED:
             minor = "encrypted";
             break;
 
-        case CMD:
+        case SimpleHTTPContentType::CMD:
             minor = "cmd";
             break;
 
-        case CSS:
+        case SimpleHTTPContentType::CSS:
             minor = "css";
             break;
 
-        case SCV:
+        case SimpleHTTPContentType::SCV:
             minor = "csv";
             break;
 
-        case HTML:
+        case SimpleHTTPContentType::HTML:
             minor = "html";
             break;
 
-        case PLAIN:
+        case SimpleHTTPContentType::PLAIN:
             minor = "plain";
             break;
 
-        case VCARD:
+        case SimpleHTTPContentType::VCARD:
             minor = "vcard";
             break;
 
-        case XFORMURLENCODED:
+        case SimpleHTTPContentType::XFORMURLENCODED:
             minor = "x-www-form-urlencoded";
             break;
     }
