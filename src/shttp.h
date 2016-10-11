@@ -40,9 +40,16 @@ class SimpleHTTP : public HTTPObject
         const char*     contents()      { return _contents; }
         const char*     lasterror()     { return _lasterrmsg.c_str(); }
         const char*     charset()       { return _charset.c_str(); }
+        int             statuscode()    { return _statuscode; }
+        const char*     statusmsg()     { return _statusmsg.c_str(); }
 
     public:
         long long contentsize();
+
+    public:
+        void resetcookie();
+        const char* cookie();
+        void cookie( const char* ck );
 
     protected:
         void splitaddress( const char* addr, std::string &host, std::string&url );
@@ -72,8 +79,11 @@ class SimpleHTTP : public HTTPObject
         std::string     _rcvData;
 
     protected:
+        int             _statuscode;
+        std::string     _statusmsg;
         const char*     _contents;
         long long       _contents_size;
+        std::string     _singlecookie;
 
     protected:
         std::string     _lasterrmsg;

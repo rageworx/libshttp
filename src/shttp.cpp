@@ -256,15 +256,24 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
                 }
             }
 
+            // Check Cookie
+            string tmpcookie;
+            _parser->getcookie( tmpcookie );
+            if ( tmpcookie.size() > 0 )
+            {
+                _singlecookie = tmpcookie;
+            }
+
             _contents = _parser->contents();
             _contents_size = _parser->contentsize();
+
+            _parser->getstatuscodemsg( _statuscode, _statusmsg );
         }
         else
         {
             _contents = NULL;
             _contents_size = 0;
         }
-
     }
 
     return true;
@@ -273,6 +282,21 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
 long long SimpleHTTP::contentsize()
 {
     return _contents_size;
+}
+
+void SimpleHTTP::resetcookie()
+{
+    _singlecookie.clear();
+}
+
+const char* SimpleHTTP::cookie()
+{
+    return _singlecookie.c_str();
+}
+
+void SimpleHTTP::cookie( const char* ck )
+{
+    _singlecookie = ck;
 }
 
 void SimpleHTTP::splitaddress( const char* addr, std::string &host, std::string &url )
@@ -300,9 +324,6 @@ void SimpleHTTP::splitaddress( const char* addr, std::string &host, std::string 
         else
         {
             host = tmpstr.substr( pos1st );
-#ifdef DEBUG
-            printf("debug.host = %s\n", host.c_str() );
-#endif
             url.clear();
         }
     }
@@ -479,7 +500,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
         out  = hdr;
         out += _targeturl;
-        out += " HTTP/1.1\r\n";
+        out += " HTTP/1.0\r\n";
         out += "User-Agent: ";
 
         if ( _customuseragent.size() > 0 )
@@ -488,13 +509,22 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
         }
         else
         {
-            out += "libSHTTP/0.2";
+            out += LIBSHTTPNAME;
         }
 
         out += "\r\n";
         out += fm;  /// From: & Host:
         out += ct;  /// Content-Type:
         out += cl;  /// Content-Length:
+
+        // check cookie
+        if ( _singlecookie.size() > 0 )
+        {
+            out += "Cookie: ";
+            out += _singlecookie;
+            out += "\r\n";
+        }
+
         out += "\r\n";
     }
 

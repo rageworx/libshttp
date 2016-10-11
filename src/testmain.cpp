@@ -34,15 +34,16 @@ int main( int argc, char** argv)
 
     SimpleHTTP http;
 
-    char url[]   = "http://127.0.0.1/index.php";
+    char url[]   = "http://rageworx.ddns.net";
     char content[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test value=30241 />";
 
     printf("Requesting for %s ... ", url );
 
-    http.httpmethod( HTTP_REQ_METHOD_POST );
-    http.postcontents( content, strlen(content) );
-    http.posttype( SimpleHTTPTool::APPLICATION | SimpleHTTPTool::XML );
-    http.charset( "utf-8" );
+    http.cookie( "JSESSIONID=2B3EE2FE56868BD9588A7B55C405974B; Path=/;" );
+    http.httpmethod( HTTP_REQ_METHOD_GET );
+    //http.postcontents( content, strlen(content) );
+    //http.posttype( SimpleHTTPTool::APPLICATION | SimpleHTTPTool::TEXT );
+    //http.charset( "utf-8" );
 
     if ( http.request( url, 80 ) == true )
     {
@@ -86,7 +87,7 @@ int main( int argc, char** argv)
             }
             else
             {
-                printf("%s", http.contents() );
+                //printf("%s", http.contents() );
             }
         }
     }

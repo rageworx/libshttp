@@ -4,11 +4,36 @@
 
 #include "shttpparser.h"
 
+#include <sstream>
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 const char tokenDilim[]     = { 0x0D, 0x0A, 0x00 };
+
+////////////////////////////////////////////////////////////////////////////////
+
+void httpparsertool_split(const string &src, char delim, vector< string > &elems)
+{
+    stringstream sstrm;
+    sstrm.str( src );
+
+    string item;
+
+    while( getline(sstrm, item, delim ) )
+    {
+        elems.push_back(item);
+    }
+}
+
+vector< string > httpparsertool_split(const string &src, char delim)
+{
+    vector< string > elems;
+    httpparsertool_split( src, delim, elems );
+
+    return elems;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -181,6 +206,58 @@ int HTTPParser::getfilename(string &fname)
     return 0;
 }
 
+void HTTPParser::getstatuscodemsg( int &code, std::string &msg )
+{
+    if ( _headerlines.size() > 0 )
+    {
+        for( int cnt=0; cnt<_headerlines.size(); cnt++ )
+        {
+            string::size_type clpos = _headerlines[cnt].find("HTTP/");
+            if ( clpos != string::npos )
+            {
+                vector< string > httpstatuslines = httpparsertool_split( _headerlines[cnt], 0x20 );
+
+                if ( httpstatuslines.size() >= 2 )
+                {
+                    code = atoi( httpstatuslines[1].c_str() );
+
+                    if ( httpstatuslines.size() > 2 )
+                    {
+                        msg.clear();
+
+                        for( int cnt=2; cnt<httpstatuslines.size(); cnt++ )
+                        {
+                            msg += httpstatuslines[ cnt] ;
+                            if ( cnt + 1 < cnt<httpstatuslines.size() )
+                            {
+                                msg += " ";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void HTTPParser::getcookie( std::string &ck )
+{
+    if ( _headerlines.size() > 0 )
+    {
+        for( int cnt=0; cnt<_headerlines.size(); cnt++ )
+        {
+            string::size_type clpos = _headerlines[cnt].find("Set-Cookie: ");
+            if ( clpos != string::npos )
+            {
+                string::size_type subPos = clpos + 12;
+                string::size_type subLen = _headerlines[cnt].size() - subPos;
+
+                ck = _headerlines[cnt].substr( subPos, subLen );
+            }
+        }
+    }
+}
+
 int HTTPParser::contentsize()
 {
     if ( _headerlines.size() > 0 )
@@ -204,3 +281,4 @@ int HTTPParser::contentsize()
 
     return 0;
 }
+

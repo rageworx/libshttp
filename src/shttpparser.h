@@ -18,6 +18,8 @@ class HTTPParser
     public:
         int  getheaderlines( std::vector<std::string> &header );
         int  getfilename(std::string &fname);
+        void getstatuscodemsg( int &code, std::string &msg );
+        void getcookie( std::string &ck );
         int  contentsize();
 
     public:

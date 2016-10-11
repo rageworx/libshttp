@@ -20,7 +20,7 @@ void HTTPObject::resetheaderitem()
 {
     _headeritems.clear();
 
-    addheader( "User-Agent", "libSHTTP/0.2" );
+    addheader( "User-Agent", LIBSHTTPNAME );
 }
 
 bool HTTPObject::addheader( string &key, string &value )
