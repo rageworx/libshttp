@@ -62,6 +62,8 @@ SimpleHTTP::~SimpleHTTP()
         _postcontent = NULL;
         _postcontentsize = 0;
     }
+
+    _rcvData.clear();
 }
 
 void SimpleHTTP::httpmethod( HTTPREQMTYPE mtype )
