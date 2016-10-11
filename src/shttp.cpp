@@ -202,6 +202,8 @@ bool SimpleHTTP::request( const char* addr, unsigned short port )
     printf("\n-------------------\n");
 #endif
 
+    _rcvData.clear();
+
     char rcvBuff[1024] = {0};
 
     // read socket until it ends ...
