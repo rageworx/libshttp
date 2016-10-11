@@ -35,6 +35,19 @@ vector< string > httpparsertool_split(const string &src, char delim)
     return elems;
 }
 
+void httpparsertool_trimspace( string &src )
+{
+    while ( src.length() > 0 && ( src[src.length() - 1] == ' ') )
+    {
+        src.erase( src.length() - 1, 1 );
+    }
+
+    while ( src.length() > 0 && ( src[0] == ' ' ) )
+    {
+        src.erase( 0, 1 );
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 HTTPParser::HTTPParser(const char* bytedata, int size)
@@ -249,10 +262,11 @@ void HTTPParser::getcookie( std::string &ck )
             string::size_type clpos = _headerlines[cnt].find("Set-Cookie: ");
             if ( clpos != string::npos )
             {
-                string::size_type subPos = clpos + 12;
+                string::size_type subPos = clpos + 11;
                 string::size_type subLen = _headerlines[cnt].size() - subPos;
 
                 ck = _headerlines[cnt].substr( subPos, subLen );
+                httpparsertool_trimspace( ck );
             }
         }
     }
