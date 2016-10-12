@@ -59,7 +59,7 @@ class SimpleHTTP : public HTTPObject
         void splitaddress( const char* addr, std::string &host, std::string&url );
         bool opensocket();
         void closesocket();
-        bool makehttpheaderstr( string &out );
+        bool makehttpheaderstr( std::string &out );
 
     protected:
         unsigned        _postcontenttype;
