@@ -33,7 +33,7 @@ class SimpleHTTP : public HTTPObject
 
     // Action
     public:
-        bool request( const char* addr, unsigned short port = 80);
+        bool request( const char* addr, unsigned short port = 80 );
         bool closeconnection(); /// if it works when keepconnected toggled.
 
     public:
