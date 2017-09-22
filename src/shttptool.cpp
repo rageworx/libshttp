@@ -62,7 +62,7 @@ unsigned long long longstrlen( const char* c )
 {
     unsigned long long ret = 0;
 
-    while ( *c != NULL )
+    while ( *c != 0x00 )
     {
         c++;
         ret++;
@@ -399,7 +399,7 @@ void SimpleHTTPTool::ConvertStringToURI( const char* str, std::string &uri )
         {
             if ( SAFECHAR_MATRIX[ str[cnt] ] >= 0 )
             {
-                char conv[4] = {NULL};
+                char conv[4] = {0,};
 
                 conv[0] = '%';
                 conv[1] = DEC2HEX_MATRIX[ str[cnt] >> 4 ];
