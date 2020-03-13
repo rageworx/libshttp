@@ -1,20 +1,22 @@
-# Makefile for fl_imgtk
+# Makefile for libshttp
 # (C)2017 Raphael Kim / rageworx@gmail.com
 #
 
 #########################################################################
+#
 # About cross compiler, or other platform :
 #
 # To enable build for embedded linux, you may encomment next 2 lines.
 # Or, may need to change your cross compiler path with environments.
 # It is up to developer !
-
+#
 # CCPREPATH = ${ARM_LINUX_GCC_PATH}
 # CCPREFIX  = arm-linux-
-
+#
 # To enable build for embedded linux, change following line.
 # CCPATH    = ${CCPREPATH}/${CCPREFIX}
 CCPATH =
+#
 #########################################################################
 
 # Compiler configure.
@@ -25,7 +27,6 @@ AR  = ${CCPATH}ar
 # FLTK place
 FLTKDIR    = /usr/local/include
 FLTKLIBDIR = /usr/local/lib
-FLTKLIBS   = -L$(FLTKLIBDIR) -lfltk -lfltk_images -lfltk_png -lfltk_jpeg
 
 # Sources and how it built
 # Optimization issue: recommend to build with using -ffast-math option.
@@ -36,16 +37,9 @@ OBJDIR    = ./obj/Release
 OUTBIN    = libshttp.a
 OUTDIR    = ./lib
 DEFINEOPT = 
-OPTIMIZEOPT = -O3 -s
-CPUARCHOPT    = -mwindows
+OPTIMIZEOPT = -O2 -s
 
-
-ifeq (debug,$(firstword $(MAKECMDGOALS)))
-	DEFINEOPT += -DDEBUG
-	OUTBIN = libfl_imgtk_d.a
-endif
-
-CFLAGS    = -I$(INCDIR) -I$(SOURCEDIR) -I$(FLTKDIR) $(DEFINEOPT) $(OPTIMIZEOPT) $(CPUARCHOPT) $(BITSOPT) $(FLTKLIBS)
+CFLAGS    = -I$(INCDIR) -I$(SOURCEDIR) $(DEFINEOPT) $(OPTIMIZEOPT)
 
 SRCS  = $(SOURCEDIR)/shttpobj.cpp
 SRCS += $(SOURCEDIR)/shttpparser.cpp
