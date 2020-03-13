@@ -378,6 +378,8 @@ bool SimpleHTTP::closeconnection()
         closesocket();
         _connectionalived = false;
     }
+
+    return true;
 }
 
 long long SimpleHTTP::contentsize()

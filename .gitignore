@@ -224,6 +224,7 @@ out/
 *.depend
 *.layout
 *.a
+*.o
 
 #############
 ## Images

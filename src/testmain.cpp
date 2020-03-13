@@ -21,29 +21,15 @@ using namespace std;
 
 #include "shttp.h"
 
-int main( int argc, char** argv)
+void do_test1()
 {
-    printf("DRTECH HASP TIME PERIOD KEY MAKER, TEST HTTP REQUEST ---\n");
-    printf("(C)2016 Raph.K.\n\n");
-
-    if( SimpleHTTP::InitWinSock() == false )
-    {
-        printf("ERROR: Winsock not initialized !\n");
-        return 0;
-    }
-
     SimpleHTTP http;
 
-    char url[]   = "http://rageworx.ddns.net";
-    char content[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<test value=30241 />";
+    char url[] = "http://rageworx.info";
 
     printf("Requesting for %s ... ", url );
 
-    http.cookie( "JSESSIONID=2B3EE2FE56868BD9588A7B55C405974B; Path=/;" );
     http.httpmethod( HTTP_REQ_METHOD_GET );
-    //http.postcontents( content, strlen(content) );
-    //http.posttype( SimpleHTTPTool::APPLICATION | SimpleHTTPTool::TEXT );
-    //http.charset( "utf-8" );
 
     if ( http.request( url, 80 ) == true )
     {
@@ -52,42 +38,17 @@ int main( int argc, char** argv)
         string outftype;
         string outfname;
 
-        printf("headers = %d\n", http.headercount() );
-        if ( http.headercount() > 0 )
-        {
-            for( int cnt=0; cnt<http.headercount(); cnt++ )
-            {
-                HTTPHI tmpHI;
-                http.getheader( cnt, tmpHI );
-
-                printf("[%03d] %s: %s \n", cnt+1, tmpHI.key.c_str(), tmpHI.value.c_str() );
-            }
-        }
-
+        // contentsize() is just returns parsed value of http header "Content-size".
+        // Need to check real content existed or not with content() return.
         printf("content = %lld bytes.\n", http.contentsize() );
-
 
         if ( http.contents() != NULL )
         {
+            outftype = http.contents();
+
             if ( outftype.size() > 0 )
             {
-                printf("content type = %s\n", outftype.c_str() );
-
-                FILE* fp = fopen( outfname.c_str(), "wb+" );
-                if ( fp != NULL )
-                {
-                    fwrite( http.contents(), 1, http.contentsize() , fp );
-                    fclose( fp );
-                    printf("file written!\n");
-                }
-                else
-                {
-                    printf("file write failed ! \n");
-                }
-            }
-            else
-            {
-                //printf("%s", http.contents() );
+                printf( "%s\n", outftype.c_str() );
             }
         }
     }
@@ -95,6 +56,60 @@ int main( int argc, char** argv)
     {
         printf("failed.\n");
     }
+
+    http.closeconnection();
+}
+
+void do_test2()
+{
+    SimpleHTTP http;
+
+    char url[] = "http://google.com";
+
+    printf("Requesting for %s ... ", url );
+
+    http.httpmethod( HTTP_REQ_METHOD_GET );
+
+    if ( http.request( url, 80 ) == true )
+    {
+        printf("[ok.]\n");
+
+        string outftype;
+        string outfname;
+
+        // contentsize() is just returns parsed value of http header "Content-size".
+        // Need to check real content existed or not with content() return.
+        printf("content = %lld bytes.\n", http.contentsize() );
+
+        if ( http.contents() != NULL )
+        {
+            outftype = http.contents();
+
+            if ( outftype.size() > 0 )
+            {
+                printf("%s\n", outftype.c_str() );
+            }
+        }
+    }
+    else
+    {
+        printf("failed.\n");
+    }
+
+    http.closeconnection();
+}
+
+int main( int argc, char** argv)
+{
+    if( SimpleHTTP::InitWinSock() == false )
+    {
+        printf("ERROR: Winsock not initialized !\n");
+        return 0;
+    }
+
+    do_test1();
+    printf( "////////////////////////////////////////////////////////\n" );
+    do_test2();
 
 	SimpleHTTP::FinalWinSock();
 

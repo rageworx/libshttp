@@ -107,7 +107,7 @@ bool HTTPObject::removeheader( string &key )
 
 bool HTTPObject::getheader( int idx, HTTPHI &out )
 {
-    if ( ( _headeritems.size() > 0 ) && ( _headeritems.size() > idx ) )
+    if ( ( _headeritems.size() > 0 ) && ( _headeritems.size() > (size_t)idx ) )
     {
         out.key = _headeritems[ idx ].key;
         out.value = _headeritems[ idx ].value;

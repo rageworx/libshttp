@@ -6,6 +6,10 @@
 ## Latest update issues
  * rewritten Makefile for libshttp.
  * removed some useless file
+ * fixed some bugs.
+
+## Latest version 
+ * 2020-03-13, version 0.3.1
 
 ## Latest version 
  * 2016-10-10, version 0.3 

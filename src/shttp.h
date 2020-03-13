@@ -7,6 +7,9 @@
 // ============================================================================
 // (C)Copyright 2012-2013 Raphael Kim (rageworx@gmail.com)
 //
+// update : 2020-03-10
+//          fixed some errors.
+//
 // update : 2016-09-20
 //          added charset= xxx option.
 //

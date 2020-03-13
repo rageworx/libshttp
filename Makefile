@@ -24,22 +24,17 @@ GCC = ${CCPATH}gcc
 GPP = ${CCPATH}g++
 AR  = ${CCPATH}ar
 
-# FLTK place
-FLTKDIR    = /usr/local/include
-FLTKLIBDIR = /usr/local/lib
-
 # Sources and how it built
 # Optimization issue: recommend to build with using -ffast-math option.
 # Change if your CPU architecture supports more high technologies.
 INCDIR    = ./inc
 SOURCEDIR = ./src
-OBJDIR    = ./obj/Release
+OBJDIR    = ./obj
 OUTBIN    = libshttp.a
 OUTDIR    = ./lib
 DEFINEOPT = 
-OPTIMIZEOPT = -O2 -s
 
-CFLAGS    = -I$(INCDIR) -I$(SOURCEDIR) $(DEFINEOPT) $(OPTIMIZEOPT)
+CFLAGS    = -I$(INCDIR) -I$(SOURCEDIR) $(DEFINEOPT)
 
 SRCS  = $(SOURCEDIR)/shttpobj.cpp
 SRCS += $(SOURCEDIR)/shttpparser.cpp
