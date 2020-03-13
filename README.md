@@ -1,7 +1,11 @@
-#libshttp
+# libshttp
  
  * A simple std c++ library for using HTTP/1.0 methods with TCP/IP socket.
  * This project is continuously working on. 
+
+## Latest update issues
+ * rewritten Makefile for libshttp.
+ * removed some useless file
 
 ## Latest version 
  * 2016-10-10, version 0.3 
