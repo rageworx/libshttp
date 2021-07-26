@@ -35,6 +35,7 @@ OUTDIR    = ./lib
 DEFINEOPT = 
 
 CFLAGS    = -I$(INCDIR) -I$(SOURCEDIR) $(DEFINEOPT)
+CFLAGS   += -O2
 
 SRCS  = $(SOURCEDIR)/shttpobj.cpp
 SRCS += $(SOURCEDIR)/shttpparser.cpp

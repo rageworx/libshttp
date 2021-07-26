@@ -31,14 +31,10 @@ bool HTTPObject::addheader( string &key, string &value )
 
     if ( headercount > 0 )
     {
-        for( int cnt=0; cnt<headercount; cnt++ )
+        existsidx = findheader( key );
+        if ( existsidx >= 0 )
         {
-            if ( _headeritems[cnt].key.compare( key ) == 0 )
-            {
-                isnewitem = false;
-                existsidx = cnt;
-                break;
-            }
+            isnewitem = false;
         }
     }
 

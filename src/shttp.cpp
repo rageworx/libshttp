@@ -522,133 +522,155 @@ void SimpleHTTP::closesocket()
 */
 bool SimpleHTTP::makehttpheaderstr( string &out )
 {
-    if ( _headeritems.size() > 0 )
-    {
+    if ( out.size() > 0 )
         out.clear();
 
-        string hdr;
-        string ct;
-        string cl;
-        string fm;
+    string hdr;
+    string ct;
+    string cl;
+    string fm;
 
-        // set method type in header.
-        switch( _method )
-        {
-            default:
-            case HTTP_REQ_METHOD_GET:
-                hdr = "GET ";
-                break;
+    // set method type in header.
+    switch( _method )
+    {
+        default:
+        case HTTP_REQ_METHOD_GET:
+            hdr = "GET ";
+            break;
 
-            case HTTP_REQ_METHOD_POST:
-                {
-                    hdr = "POST ";
-
-                    char tmpstr[80] = {0};
-
-                    sprintf( tmpstr, "From: %s\r\n", _targeturl.c_str() );
-                    fm = tmpstr;
-                    sprintf( tmpstr, "Host: %s\r\n", _targetaddr.c_str() );     /// It need to be required !
-                    fm += tmpstr;
-
-                    if ( _postcontenttype == 0 )
-                    {
-                        _postcontenttype = SimpleHTTPContentType::APPLICATION | SimpleHTTPContentType::XFORMURLENCODED;
-                    }
-                }
-                break;
-
-            case HTTP_REQ_METHOD_PUT:
-                hdr = "PUT ";
-                break;
-
-            case HTTP_REQ_METHOD_DELETE:
-                hdr = "DELETE ";
-                break;
-
-            case HTTP_REQ_METHOD_OPTIONS:
-                {
-                    hdr = "OPTIONS ";
-
-                    if ( _postcontenttype == 0 )
-                    {
-                        _postcontenttype = SimpleHTTPContentType::APPLICATION | SimpleHTTPContentType::XFORMURLENCODED;
-                    }
-                }
-                break;
-
-            case HTTP_REQ_METHOD_HEAD:
-                hdr = "HEAD ";
-                break;
-
-            case HTTP_REQ_METHOD_TRACE:
-                hdr = "TRACE ";
-                break;
-
-            case HTTP_REQ_METHOD_CONNECT:
-                hdr = "CONNECT ";
-                break;
-
-            case HTTP_REQ_METHOD_SENDFILE:
-                hdr = "FILE ";
-                break;
-
-            case HTTP_REQ_METHOD_GETFILE:
-                hdr = "FILE ";
-                break;
-
-        }
-
-        // set contents size if it exists.
-        if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
-        {
-            char  tmpstr[80] = {0};
-
-            if ( _charset.size() == 0 )
+        case HTTP_REQ_METHOD_POST:
             {
-                sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
+                hdr = "POST ";
+
+                char tmpstr[80] = {0};
+
+                sprintf( tmpstr, "From: %s\r\n", _targeturl.c_str() );
+                fm = tmpstr;
+                sprintf( tmpstr, "Host: %s\r\n", _targetaddr.c_str() );     /// It need to be required !
+                fm += tmpstr;
+
+                if ( _postcontenttype == 0 )
+                {
+                    _postcontenttype = SimpleHTTPContentType::APPLICATION | SimpleHTTPContentType::XFORMURLENCODED;
+                }
             }
-            else
+            break;
+
+        case HTTP_REQ_METHOD_PUT:
+            hdr = "PUT ";
+            break;
+
+        case HTTP_REQ_METHOD_DELETE:
+            hdr = "DELETE ";
+            break;
+
+        case HTTP_REQ_METHOD_OPTIONS:
             {
-                sprintf( tmpstr,
-                         "Content-Type: %s; charset=%s\r\n",
-                         SimpleHTTPTool::GetMIME( _postcontenttype ),
-                         _charset.c_str() );
+                hdr = "OPTIONS ";
+
+                if ( _postcontenttype == 0 )
+                {
+                    _postcontenttype = SimpleHTTPContentType::APPLICATION | SimpleHTTPContentType::XFORMURLENCODED;
+                }
             }
-            ct = tmpstr;
+            break;
 
-            sprintf( tmpstr, "Content-Length: %lld\r\n", _postcontentsize );
-            cl = tmpstr;
-        }
+        case HTTP_REQ_METHOD_HEAD:
+            hdr = "HEAD ";
+            break;
 
-        out  = hdr;
-        out += _targeturl;
-        out += " HTTP/1.0\r\n";
-        out += "User-Agent: ";
+        case HTTP_REQ_METHOD_TRACE:
+            hdr = "TRACE ";
+            break;
 
-        if ( _customuseragent.size() > 0 )
+        case HTTP_REQ_METHOD_CONNECT:
+            hdr = "CONNECT ";
+            break;
+
+        case HTTP_REQ_METHOD_SENDFILE:
+            hdr = "FILE ";
+            break;
+
+        case HTTP_REQ_METHOD_GETFILE:
+            hdr = "FILE ";
+            break;
+
+    }
+
+    // set contents size if it exists.
+    if ( ( _postcontent != NULL ) && ( _postcontentsize > 0 ) )
+    {
+        char  tmpstr[80] = {0};
+
+        if ( _charset.size() == 0 )
         {
-            out += _customuseragent;
+            sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
         }
         else
         {
-            out += LIBSHTTPNAME;
+            sprintf( tmpstr,
+                     "Content-Type: %s; charset=%s\r\n",
+                     SimpleHTTPTool::GetMIME( _postcontenttype ),
+                     _charset.c_str() );
         }
+        ct = tmpstr;
 
-        out += "\r\n";
+        sprintf( tmpstr, "Content-Length: %lld\r\n", _postcontentsize );
+        cl = tmpstr;
+    }
+
+    out  = hdr;
+    out += _targeturl;
+    out += " HTTP/1.0\r\n";
+
+    if ( _customuseragent.size() > 0 )
+    {
+        addheader( "User-Agent: ", _customuseragent.c_str() );
+    }
+
+    out += "\r\n";
+    if ( fm.size() > 0 )
+    {
         out += fm;  /// From: & Host:
+    }
+
+    if ( ct.size() > 0 )
+    {
         out += ct;  /// Content-Type:
+    }
+
+    if ( cl.size() > 0 )
+    {
         out += cl;  /// Content-Length:
+    }
 
-        // check cookie
-        if ( _singlecookie.size() > 0 )
-        {
-            out += "Cookie: ";
-            out += _singlecookie;
-            out += "\r\n";
-        }
-
+    // check cookie
+    if ( _singlecookie.size() > 0 )
+    {
+        out += "Cookie: ";
+        out += _singlecookie;
         out += "\r\n";
     }
+
+    // custom
+    if ( _headeritems.size() > 0 )
+    {
+        printf( " _headeritems.size() = %lu\n", _headeritems.size()  );
+
+        for( size_t cnt=0; cnt<_headeritems.size(); cnt++ )
+        {
+            out += _headeritems[cnt].key;
+            out += ": ";
+            out += _headeritems[cnt].value;
+            out += "\r\n";
+
+            printf( " _headeritems[%lu].key = %s, _headeritems[%lu].value = %s\n",
+                    cnt, _headeritems[cnt].key.c_str(),
+                    cnt, _headeritems[cnt].value.c_str() );
+        }
+    }
+
+    out += "\r\n";
 
     return true;
 }
