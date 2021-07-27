@@ -49,9 +49,9 @@ else
     ARCH_SS = $(shell echo $(ARCH_S) | cut -d _ -f1)
     ifeq ($(ARCH_SS),MINGW64)
         DEFS    += -DSUPPORT_WCHAR -DUNICODE
-        OPTS    += -mwindows
+        OPTS    += -mconsole
         LOPTS   += -s -static -mtune=native
-        LOPTS   += -lwbemuuid -luuid -lole32 -loleaut32 -lws2_32
+        LOPTS   += -lws2_32
     else
         #Unknown or Unsupported platform.
         TARGET = NOTSUPPORTEDPLATFORM
