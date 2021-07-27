@@ -43,7 +43,6 @@ ifeq ($(ARCH_S),Darwin)
     OPTS    += -std=c++11
 else ifeq ($(ARCH_S),Linux)
     OPTS  += -std=c++11
-    OPTS  += -fopenmp
     LOPTS += -s
     LOPTS += -mtune=native
 else
@@ -51,7 +50,6 @@ else
     ifeq ($(ARCH_SS),MINGW64)
         DEFS    += -DSUPPORT_WCHAR -DUNICODE
         OPTS    += -mwindows
-        OPTS    += -fopenmp
         LOPTS   += -s -static -mtune=native
         LOPTS   += -lwbemuuid -luuid -lole32 -loleaut32 -lws2_32
     else
