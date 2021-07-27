@@ -25,9 +25,9 @@ void HTTPObject::resetheaderitem()
 
 bool HTTPObject::addheader( string &key, string &value )
 {
-    int  headercount = _headeritems.size();
-    bool isnewitem = true;
-    int  existsidx = -1;
+    size_t  headercount = _headeritems.size();
+    bool    isnewitem = true;
+    int     existsidx = -1;
 
     if ( headercount > 0 )
     {
@@ -65,12 +65,12 @@ int  HTTPObject::findheader( std::string &key )
 {
     if ( _headeritems.size() > 0 )
     {
-        int seekend = _headeritems.size();
-        for( int cnt=0; cnt<seekend; cnt++ )
+        size_t seekend = _headeritems.size();
+        for( size_t cnt=0; cnt<seekend; cnt++ )
         {
             if ( _headeritems[cnt].key == key )
             {
-                return cnt;
+                return (int)cnt;
             }
         }
     }
@@ -80,11 +80,14 @@ int  HTTPObject::findheader( std::string &key )
 
 bool HTTPObject::removeheader( int idx )
 {
-    if ( ( _headeritems.size() > 0 ) && ( _headeritems.size() > idx ) )
+    if ( idx >= 0 )
     {
-        _headeritems.erase( _headeritems.begin() + idx );
+        if ( ( _headeritems.size() > 0 ) && ( _headeritems.size() > (size_t)idx ) )
+        {
+            _headeritems.erase( _headeritems.begin() + (size_t)idx );
 
-        return true;
+            return true;
+        }
     }
 
     return false;
@@ -103,12 +106,15 @@ bool HTTPObject::removeheader( string &key )
 
 bool HTTPObject::getheader( int idx, HTTPHI &out )
 {
-    if ( ( _headeritems.size() > 0 ) && ( _headeritems.size() > (size_t)idx ) )
+    if ( idx >= 0 )
     {
-        out.key = _headeritems[ idx ].key;
-        out.value = _headeritems[ idx ].value;
+        if ( ( _headeritems.size() > 0 ) && ( _headeritems.size() > (size_t)idx ) )
+        {
+            out.key = _headeritems[ idx ].key;
+            out.value = _headeritems[ idx ].value;
 
-        return true;
+            return true;
+        }
     }
 
     return false;

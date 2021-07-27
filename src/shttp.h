@@ -5,7 +5,7 @@
 //
 // Simple socket HTTP library.
 // ============================================================================
-// (C)Copyright 2012-2013 Raphael Kim (rageworx@gmail.com)
+// (C)Copyright 2012-2021 Raphael Kim (rageworx@gmail.com)
 //
 //
 // update : 2021-07-26
@@ -54,7 +54,7 @@ class SimpleHTTP : public HTTPObject
         bool            keepconnected() { return _keepconnected; }
 
     public:
-        long long contentsize();
+        size_t    contentsize();
         void      clearcontents();
 
     public:
@@ -71,7 +71,7 @@ class SimpleHTTP : public HTTPObject
     protected:
         unsigned        _postcontenttype;
         char*           _postcontent;
-        long long       _postcontentsize;
+        size_t          _postcontentsize;
         HTTPParser*     _parser;
         bool            _socketinuse;
 
@@ -97,7 +97,7 @@ class SimpleHTTP : public HTTPObject
         int             _statuscode;
         std::string     _statusmsg;
         const char*     _contents;
-        long long       _contents_size;
+        size_t          _contents_size;
         std::string     _singlecookie;
 
     protected:

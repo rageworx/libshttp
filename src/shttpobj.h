@@ -14,7 +14,7 @@ class HTTPObject
     public:
         void        httpevent( HTTPEvent* e )   { _event = e; }
         HTTPEvent*  httpevent()                 { return _event; }
-        int         headercount()               { return _headeritems.size(); }
+        size_t      headercount()               { return _headeritems.size(); }
 
     public:
         bool addheader( std::string &key, std::string &value );

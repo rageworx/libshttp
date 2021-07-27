@@ -4,14 +4,16 @@
  * This project is continuously working on. 
 
 ## Latest update issues
- * rewritten Makefile for libshttp.
- * removed some useless file
+ * Supporting MinGW-W64, Linux, MacOS 11
+ * fixed to support large data size over integer.
+ * fixed missing user header item issues.
  * fixed some bugs.
 
 ## Latest version 
- * 2020-03-13, version 0.3.1
+ * 2021-07-27, version 0.3.5
 
-## Latest version 
+## Previous versions
+ * 2020-03-13, version 0.3.1
  * 2016-10-10, version 0.3 
 
 ## Supported methods 

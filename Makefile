@@ -1,28 +1,16 @@
 # Makefile for libshttp
-# (C)2017 Raphael Kim / rageworx@gmail.com
+# (C)2021 Raphael Kim / rageworx@gmail.com
 #
 
-#########################################################################
-#
-# About cross compiler, or other platform :
-#
-# To enable build for embedded linux, you may encomment next 2 lines.
-# Or, may need to change your cross compiler path with environments.
-# It is up to developer !
-#
-# CCPREPATH = ${ARM_LINUX_GCC_PATH}
-# CCPREFIX  = arm-linux-
-#
-# To enable build for embedded linux, change following line.
-# CCPATH    = ${CCPREPATH}/${CCPREFIX}
-CCPATH =
-#
-#########################################################################
+# architecture detecting by uname.
+ARCH_S = $(shell uname -s)
+ARCH_M = $(shell uname -m)
+ARCH_R = $(shell uname -r | cut -d . -f1)
 
-# Compiler configure.
-GCC = ${CCPATH}gcc
-GPP = ${CCPATH}g++
-AR  = ${CCPATH}ar
+GCC = gcc
+GXX = g++
+AR  = ar
+RL  = ranlib
 
 # Sources and how it built
 # Optimization issue: recommend to build with using -ffast-math option.
@@ -30,12 +18,12 @@ AR  = ${CCPATH}ar
 INCDIR    = ./inc
 SOURCEDIR = ./src
 OBJDIR    = ./obj
-OUTBIN    = libshttp.a
+LIBNAME   = shttp
+OUTBIN    = lib$(LIBNAME).a
 OUTDIR    = ./lib
-DEFINEOPT = 
-
-CFLAGS    = -I$(INCDIR) -I$(SOURCEDIR) $(DEFINEOPT)
-CFLAGS   += -O2
+BINDIR    = ./bin
+OPTS      =
+LOPTS     =
 
 SRCS  = $(SOURCEDIR)/shttpobj.cpp
 SRCS += $(SOURCEDIR)/shttpparser.cpp
@@ -44,23 +32,62 @@ SRCS += $(SOURCEDIR)/shttp.cpp
 
 OBJS = $(SRCS:$(SOURCEDIR)/%.cpp=$(OBJDIR)/%.o)
 
-all: prepare clean $(OUTDIR)/$(OUTBIN)
+# Architecture reconfiguration : supported = MacOS, Linux and MinGW-W64.
+ifeq ($(ARCH_S),Darwin)
+    GCC = llvm-gcc
+    CXX = llvm-g++
 
-debug: all
+    ifeq ($(shell test $(ARCH_R) -gt 19; echo $$?),0)
+        OPTS += -arch x86_64 -arch arm64
+    endif
+    OPTS    += -std=c++11
+else ifeq ($(ARCH_S),Linux)
+    OPTS  += -std=c++11
+    OPTS  += -fopenmp
+    LOPTS += -s
+    LOPTS += -mtune=native
+else
+    ARCH_SS = $(shell echo $(ARCH_S) | cut -d _ -f1)
+    ifeq ($(ARCH_SS),MINGW64)
+        DEFS    += -DSUPPORT_WCHAR -DUNICODE
+        OPTS    += -mwindows
+        OPTS    += -fopenmp
+        LOPTS   += -s -static -mtune=native
+        LOPTS   += -lwbemuuid -luuid -lole32 -loleaut32 -lws2_32
+    else
+        #Unknown or Unsupported platform.
+        TARGET = NOTSUPPORTEDPLATFORM
+    endif
+endif
+
+CFLAGS   += -I$(INCDIR) -I$(SOURCEDIR) $(OPTS)
+CFLAGS   += -O2
+LFLAGS   += ${LOPTS}
+
+all: prepare clean $(OUTDIR)/$(OUTBIN)
 
 prepare:
 	@mkdir -p ${OBJDIR}
 	@mkdir -p ${OUTDIR}
+	@mkdir -p ${BINDIR}
 
 $(OBJS): $(OBJDIR)/%.o: $(SOURCEDIR)/%.cpp
 	@echo "Building $@ ..."
-	@$(GPP) -c $< ${CFLAGS} -o $@
+	@$(GXX) -c $< ${CFLAGS} -o $@
 
 $(OUTDIR)/$(OUTBIN): $(OBJS)
 	@echo "Generating $@ ..."
-	@$(AR) -q $@ $(OBJDIR)/*.o
+	@$(AR) -cr $@ $^
+	@$(RL) $@
+
+test: $(OUTDIR)/$(OUTBIN) $(SOURCEDIR)/testmain.cpp
+	@echo "Building $@ ..."
+	$(GXX) $(SOURCEDIR)/testmain.cpp ${CFLAGS} -L$(OUTDIR) -l$(LIBNAME) ${LFLAGS} -o $(BINDIR)/$@
 
 clean:
 	@echo "Cleaning built directories ..."
 	@rm -rf ${OBJDIR}/*
 	@rm -rf ${OUTDIR}/${OUTBIN}
+
+NOTSUPPORTEDPLATFORM:
+	@echo "This platform is not supported."

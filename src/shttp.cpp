@@ -382,7 +382,7 @@ bool SimpleHTTP::closeconnection()
     return true;
 }
 
-long long SimpleHTTP::contentsize()
+size_t SimpleHTTP::contentsize()
 {
     return _contents_size;
 }
@@ -544,9 +544,9 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
                 char tmpstr[80] = {0};
 
-                sprintf( tmpstr, "From: %s\r\n", _targeturl.c_str() );
+                snprintf( tmpstr, 80, "From: %s\r\n", _targeturl.c_str() );
                 fm = tmpstr;
-                sprintf( tmpstr, "Host: %s\r\n", _targetaddr.c_str() );     /// It need to be required !
+                snprintf( tmpstr, 80, "Host: %s\r\n", _targetaddr.c_str() );
                 fm += tmpstr;
 
                 if ( _postcontenttype == 0 )
@@ -604,18 +604,18 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
 
         if ( _charset.size() == 0 )
         {
-            sprintf( tmpstr, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
+            snprintf( tmpstr, 80, "Content-Type: %s\r\n", SimpleHTTPTool::GetMIME( _postcontenttype ) );
         }
         else
         {
-            sprintf( tmpstr,
+            snprintf( tmpstr, 80,
                      "Content-Type: %s; charset=%s\r\n",
                      SimpleHTTPTool::GetMIME( _postcontenttype ),
                      _charset.c_str() );
         }
         ct = tmpstr;
 
-        sprintf( tmpstr, "Content-Length: %lld\r\n", _postcontentsize );
+        snprintf( tmpstr, 80, "Content-Length: %lld\r\n", _postcontentsize );
         cl = tmpstr;
     }
 
@@ -663,10 +663,11 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
             out += ": ";
             out += _headeritems[cnt].value;
             out += "\r\n";
-
+#ifdef DEBUG
             printf( " _headeritems[%lu].key = %s, _headeritems[%lu].value = %s\n",
                     cnt, _headeritems[cnt].key.c_str(),
                     cnt, _headeritems[cnt].value.c_str() );
+#endif
         }
     }
 

@@ -37,7 +37,7 @@ vector< string > httpparsertool_split(const string &src, char delim)
 
 void httpparsertool_trimspace( string &src )
 {
-    while ( src.length() > 0 && ( src[src.length() - 1] == ' ') )
+    while ( ( src.length() > 0 ) && ( src[src.length()-1] == ' ' ) )
     {
         src.erase( src.length() - 1, 1 );
     }
@@ -50,7 +50,7 @@ void httpparsertool_trimspace( string &src )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-HTTPParser::HTTPParser(const char* bytedata, int size)
+HTTPParser::HTTPParser(const char* bytedata, size_t size)
  : httpData(NULL),
    httpDataSize(0),
    bodyStartPtr(NULL)
@@ -76,7 +76,7 @@ bool HTTPParser::parse( std::string &contents )
     return parse( contents.c_str(), contents.size() );
 }
 
-bool HTTPParser::parse( const char* bytedata, int size )
+bool HTTPParser::parse( const char* bytedata, size_t size )
 {
     if ( ( bytedata != NULL ) && ( size > 0 ) )
     {
@@ -90,18 +90,19 @@ bool HTTPParser::parse( const char* bytedata, int size )
 
     if ( ( httpData != NULL ) && ( httpDataSize > 0 ) )
     {
-        _headerlines.clear();
+        if ( _headerlines.size() > 0 )
+            _headerlines.clear();
 
-        int   curQueue     = 0;
-        char* tempHeadLine = NULL;
-        char* tokenStart   = httpData;
-        char* tokenNext    = NULL;
+        size_t  curQueue     = 0;
+        char*   tempHeadLine = NULL;
+        char*   tokenStart   = httpData;
+        char*   tokenNext    = NULL;
 
         tokenNext = strstr(tokenStart, tokenDilim);
 
         while ( true )
         {
-            int tokenSize = tokenNext - tokenStart;
+            size_t tokenSize = tokenNext - tokenStart;
             curQueue += tokenSize;
 
             if ( curQueue > httpDataSize )
@@ -150,9 +151,9 @@ bool HTTPParser::parse( const char* bytedata, int size )
     return false;
 }
 
-int HTTPParser::getheaderlines(vector<string> &header)
+size_t HTTPParser::getheaderlines(vector<string> &header)
 {
-    int cnt = 0;
+    size_t cnt = 0;
 
     for ( cnt=0; cnt<_headerlines.size(); cnt++ )
     {
@@ -223,14 +224,14 @@ void HTTPParser::getstatuscodemsg( int &code, std::string &msg )
 {
     if ( _headerlines.size() > 0 )
     {
-        for( int cnt=0; cnt<_headerlines.size(); cnt++ )
+        for( size_t cnt=0; cnt<_headerlines.size(); cnt++ )
         {
             string::size_type clpos = _headerlines[cnt].find("HTTP/");
             if ( clpos != string::npos )
             {
                 vector< string > httpstatuslines = httpparsertool_split( _headerlines[cnt], 0x20 );
 
-                if ( httpstatuslines.size() >= 2 )
+                if ( httpstatuslines.size() > 1 )
                 {
                     code = atoi( httpstatuslines[1].c_str() );
 
@@ -238,10 +239,10 @@ void HTTPParser::getstatuscodemsg( int &code, std::string &msg )
                     {
                         msg.clear();
 
-                        for( int cnt=2; cnt<httpstatuslines.size(); cnt++ )
+                        for( size_t cntl=2; cnt<httpstatuslines.size(); cnt++ )
                         {
-                            msg += httpstatuslines[ cnt] ;
-                            if ( cnt + 1 < cnt<httpstatuslines.size() )
+                            msg += httpstatuslines[cntl] ;
+                            if ( cntl + 1 < cnt<httpstatuslines.size() )
                             {
                                 msg += " ";
                             }
@@ -258,9 +259,9 @@ void HTTPParser::getcookie( std::string &ck )
     if ( _headerlines.size() > 0 )
     {
         string outstr;
-        int    ckcnt = 0;
+        size_t ckcnt = 0;
 
-        for( int cnt=0; cnt<_headerlines.size(); cnt++ )
+        for( size_t cnt=0; cnt<_headerlines.size(); cnt++ )
         {
             string::size_type clpos = _headerlines[cnt].find("Set-Cookie: ");
             if ( clpos != string::npos )
@@ -295,11 +296,11 @@ void HTTPParser::getcookie( std::string &ck )
     }
 }
 
-int HTTPParser::contentsize()
+size_t HTTPParser::contentsize()
 {
     if ( _headerlines.size() > 0 )
     {
-        for( int cnt=0; cnt<_headerlines.size(); cnt++ )
+        for( size_t cnt=0; cnt<_headerlines.size(); cnt++ )
         {
             string::size_type clpos = _headerlines[cnt].find("Content-Length: ");
             if ( clpos != string::npos )
@@ -310,12 +311,18 @@ int HTTPParser::contentsize()
                 string tmpCL = _headerlines[cnt].substr( subPos, subLen );
                 if ( tmpCL.size() > 0 )
                 {
-                    return atoi(tmpCL.c_str());
+                    char* strend = NULL;
+                    return strtoull( tmpCL.c_str(), &strend, 10 );
                 }
             }
         }
     }
 
     return 0;
+}
+
+size_t HTTPParser::datasize()
+{
+    return httpDataSize;
 }
 

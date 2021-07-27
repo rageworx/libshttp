@@ -7,29 +7,30 @@
 class HTTPParser
 {
     public:
-        HTTPParser(const char* bytedata = NULL , int size = 0);
+        HTTPParser(const char* bytedata = NULL , size_t size = 0);
         virtual ~HTTPParser();
 
     public:
         bool parse( std::string &contents );
-        bool parse( const char* bytedata, int size);
+        bool parse( const char* bytedata, size_t size);
         void flush();
 
     public:
-        int  getheaderlines( std::vector<std::string> &header );
-        int  getfilename(std::string &fname);
-        void getstatuscodemsg( int &code, std::string &msg );
-        void getcookie( std::string &ck );
-        int  contentsize();
+        size_t  getheaderlines( std::vector<std::string> &header );
+        int     getfilename(std::string &fname);
+        void    getstatuscodemsg( int &code, std::string &msg );
+        void    getcookie( std::string &ck );
+        size_t  contentsize();
+        size_t  datasize();
 
     public:
         const char* contents();
 
     private:
-        char* httpData;
-        int   httpDataSize;
-        int   httpDataWriteQueue;
-        char* bodyStartPtr;
+        char*   httpData;
+        size_t  httpDataSize;
+        size_t  httpDataWriteQueue;
+        char*   bodyStartPtr;
 
     protected:
         std::vector<std::string>    _headerlines;
