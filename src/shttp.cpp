@@ -542,11 +542,11 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
             {
                 hdr = "POST ";
 
-                char tmpstr[80] = {0};
+                char tmpstr[256] = {0};
 
-                snprintf( tmpstr, 80, "From: %s\r\n", _targeturl.c_str() );
+                snprintf( tmpstr, 256, "From: %s\r\n", _targeturl.c_str() );
                 fm = tmpstr;
-                snprintf( tmpstr, 80, "Host: %s\r\n", _targetaddr.c_str() );
+                snprintf( tmpstr, 256, "Host: %s\r\n", _targetaddr.c_str() );
                 fm += tmpstr;
 
                 if ( _postcontenttype == 0 )
@@ -627,8 +627,7 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
     {
         addheader( "User-Agent: ", _customuseragent.c_str() );
     }
-
-    out += "\r\n";
+    
     if ( fm.size() > 0 )
     {
         out += fm;  /// From: & Host:
@@ -655,19 +654,24 @@ bool SimpleHTTP::makehttpheaderstr( string &out )
     // custom
     if ( _headeritems.size() > 0 )
     {
+#ifdef DEBUG
         printf( " _headeritems.size() = %lu\n", _headeritems.size()  );
+#endif
 
         for( size_t cnt=0; cnt<_headeritems.size(); cnt++ )
         {
-            out += _headeritems[cnt].key;
-            out += ": ";
-            out += _headeritems[cnt].value;
-            out += "\r\n";
+            if ( _headeritems[cnt].key.size() > 0 )
+            {
+                out += _headeritems[cnt].key;
+                out += ": ";
+                out += _headeritems[cnt].value;
+                out += "\r\n";
 #ifdef DEBUG
-            printf( " _headeritems[%lu].key = %s, _headeritems[%lu].value = %s\n",
-                    cnt, _headeritems[cnt].key.c_str(),
-                    cnt, _headeritems[cnt].value.c_str() );
+                printf( " _headeritems[%lu].key = %s, _headeritems[%lu].value = %s\n",
+                        cnt, _headeritems[cnt].key.c_str(),
+                        cnt, _headeritems[cnt].value.c_str() );
 #endif
+            }
         }
     }
 
